@@ -1,0 +1,15 @@
+{
+  "name": "@funk-finder/scraper",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@funk-finder/db": "../db",
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "pocketbase": "^0.21.1"
+  }
+}

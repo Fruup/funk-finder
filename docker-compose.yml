@@ -1,0 +1,41 @@
+version: '3.9'
+name: funk-finder
+services:
+  # web:
+  #   build:
+  #     dockerfile_inline: |
+  #       FROM oven/bun:slim
+  #       RUN bun upgrade
+  #   command: sh dev.sh
+  #   working_dir: /work/web
+  #   ports:
+  #     - 5173:5173
+  #   volumes:
+  #     - ./web:/work/web
+
+  db:
+    build:
+      dockerfile: .dev/Dockerfile.db
+    ports:
+      - 8080:8080
+    expose:
+      - 8080
+    volumes:
+      - ./db/pb:/pb
+    networks:
+      - funk-finder
+
+  scraper:
+    build:
+      dockerfile: scraper/Dockerfile
+    working_dir: /work
+    volumes:
+      - ./scraper:/work
+    networks:
+      - funk-finder
+
+  # ocr:
+
+networks:
+  funk-finder:
+    driver: bridge
