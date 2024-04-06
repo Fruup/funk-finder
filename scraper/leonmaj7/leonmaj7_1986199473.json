@@ -1,0 +1,87 @@
+{
+    "instaloader": {
+        "node_type": "Profile",
+        "version": "4.11"
+    },
+    "node": {
+        "ai_agent_type": null,
+        "bio_links": [
+            {
+                "link_type": "external",
+                "lynx_url": "https://l.instagram.com/?u=http%3A%2F%2Fleonscherer.com%2F%3Ffbclid%3DPAAaY__AiS_NSry4IcnmeArB2jjEYWxJGqABTgabLix_I34eWPO7wm-9pXwm0_aem_AUOTjDsn7KC0cbaIKb4LlcyYZiKpC-Fp0ilQ8A_ohZg3y9CwlznQ67mZmUotdm7CYws&e=AT0KEyxiCSUW0Gu3suIhKP0FjimFFy_KJRfwbuQW8KIu-FBNvhgl2EMrMQ0s4AG2DYYizyd8Vxd21zp8-FObCdVJ2Zv9rcFaNnhfWA",
+                "title": "",
+                "url": "http://leonscherer.com/"
+            }
+        ],
+        "biography": "hey",
+        "biography_with_entities": {
+            "entities": [],
+            "raw_text": "hey"
+        },
+        "blocked_by_viewer": false,
+        "business_address_json": null,
+        "business_category_name": null,
+        "business_contact_method": "UNKNOWN",
+        "business_email": null,
+        "business_phone_number": null,
+        "category_enum": null,
+        "category_name": null,
+        "connected_fb_page": null,
+        "country_block": false,
+        "edge_follow": {
+            "count": 279
+        },
+        "edge_followed_by": {
+            "count": 151
+        },
+        "edge_mutual_followed_by": {
+            "count": 0,
+            "edges": []
+        },
+        "eimu_id": "111689576891258",
+        "external_url": "http://leonscherer.com/",
+        "external_url_linkshimmed": "https://l.instagram.com/?u=http%3A%2F%2Fleonscherer.com%2F%3Ffbclid%3DPAAaYmIZvg8pXzJcFsiPtbzy4qkANuk6xFHw0OeN5jC1Pej9c_2Y4iXvaynzk_aem_AUNVZuR2Q8hoPMIq7-a6GfrmeYTz3RaSmDnXcMnqjg3lIYtJ7d8cahoxtSWS0idrCJs&e=AT3BnDWyewJqY9rncYIMP0D1b-i99A_sE4CIA-mCqHstMV4S6hgymvqzxKq407lYfrNlZA8_xGtYtcHbhtNjXtK315etIJFaohlv7Q",
+        "fb_profile_biolink": null,
+        "fbid": "17841402144198274",
+        "followed_by_viewer": false,
+        "follows_viewer": false,
+        "full_name": "Leon",
+        "group_metadata": null,
+        "guardian_id": null,
+        "has_ar_effects": false,
+        "has_blocked_viewer": false,
+        "has_chaining": true,
+        "has_channel": false,
+        "has_clips": false,
+        "has_guides": false,
+        "has_requested_viewer": false,
+        "hide_like_and_view_counts": false,
+        "highlight_reel_count": 1,
+        "id": "1986199473",
+        "is_business_account": false,
+        "is_embeds_disabled": false,
+        "is_guardian_of_viewer": false,
+        "is_joined_recently": false,
+        "is_private": false,
+        "is_professional_account": false,
+        "is_regulated_c18": false,
+        "is_supervised_by_viewer": false,
+        "is_supervised_user": false,
+        "is_supervision_enabled": true,
+        "is_verified": false,
+        "is_verified_by_mv4b": false,
+        "overall_category_name": null,
+        "pinned_channels_list_count": 0,
+        "profile_pic_url": "https://scontent-fra5-1.cdninstagram.com/v/t51.2885-19/273987654_1843097069220566_7548089090663526124_n.jpg?stp=dst-jpg_e0_s150x150&_nc_ht=scontent-fra5-1.cdninstagram.com&_nc_cat=102&_nc_ohc=OFznCvCR_tIAb6WZ7lS&edm=AOQ1c0wBAAAA&ccb=7-5&oh=00_AfBFsH1Hux_T4HRN_q0g0ttfkZr8pxdjHlu-zrTyJEYONg&oe=66168BB5&_nc_sid=8b3546",
+        "profile_pic_url_hd": "https://scontent-fra5-1.cdninstagram.com/v/t51.2885-19/273987654_1843097069220566_7548089090663526124_n.jpg?stp=dst-jpg_s320x320&_nc_ht=scontent-fra5-1.cdninstagram.com&_nc_cat=102&_nc_ohc=OFznCvCR_tIAb6WZ7lS&edm=AOQ1c0wBAAAA&ccb=7-5&oh=00_AfCPyybxbHV99JB6_jlVYbeEHy9nSsTpzQ0Vj7F3sQWOsw&oe=66168BB5&_nc_sid=8b3546",
+        "pronouns": [],
+        "requested_by_viewer": false,
+        "restricted_by_viewer": false,
+        "should_show_category": false,
+        "should_show_public_contacts": false,
+        "show_account_transparency_details": true,
+        "transparency_label": null,
+        "transparency_product": null,
+        "username": "leonmaj7"
+    }
+}
