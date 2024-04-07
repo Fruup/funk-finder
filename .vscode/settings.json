@@ -20,6 +20,8 @@
 		"tesseract"
 	],
 	"github.copilot.enable": {
-		"*": true
+		"*": true,
+		"plaintext": true,
+		"markdown": true
 	}
 }
