@@ -38,7 +38,7 @@ func ComputeCosineSimilarity(x []float32, y []float32) float32 {
 	return dotProduct / float32(math.Sqrt(float64(normX*normY)))
 }
 
-func (strategy *EmbeddingSearchStrategy) Search(query string) ([]SearchResultItem, error) {
+func (strategy *EmbeddingSearchStrategy) Search(query string) (SearchResult, error) {
 	// Create embedding of query string.
 	embedding, err := openai.CreateEmbedding(query)
 	if err != nil {
@@ -52,7 +52,7 @@ func (strategy *EmbeddingSearchStrategy) Search(query string) ([]SearchResultIte
 		return nil, err
 	}
 
-	result := []SearchResultItem{}
+	result := SearchResult{}
 
 	for _, medium := range media {
 		var mediumEmbedding []float32

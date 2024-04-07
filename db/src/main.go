@@ -6,6 +6,7 @@ import (
 	"myapp/src/openai"
 	"myapp/src/search"
 	"net/http"
+	"sort"
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v5"
@@ -64,6 +65,9 @@ func main() {
 			if err != nil {
 				return c.String(http.StatusInternalServerError, "Failed to search")
 			}
+
+			// Sort.
+			sort.Sort(result)
 
 			return c.JSON(http.StatusOK, result)
 		})
