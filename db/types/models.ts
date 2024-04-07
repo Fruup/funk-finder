@@ -1,16 +1,13 @@
-import type { RecordModel } from 'pocketbase'
-
-export interface Medium extends RecordModel {
-	id: string
+export interface Medium<Expand extends boolean = true> {
 	url: string
 	alt?: string
 	text?: string
+	post: Expand extends true ? Post : string
 }
 
-export interface Post<Expand extends boolean = false> extends RecordModel {
+export interface Post {
+	shortcode: string
 	caption?: string
-	media: (Expand extends true ? Medium : string)[]
-	status: 'pending' | 'finished'
 }
 
 // type MultipleReference<

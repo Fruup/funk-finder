@@ -9,10 +9,14 @@
 	},
 	"hide-files.files": [],
 	"cSpell.words": [
+		"godotenv",
+		"gosseract",
 		"instaloader",
 		"leonmaj",
+		"otiai",
 		"sessionfile",
 		"shortcode",
+		"tessdata",
 		"tesseract"
 	],
 	"github.copilot.enable": {

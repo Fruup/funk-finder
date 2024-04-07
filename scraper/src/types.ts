@@ -2,37 +2,45 @@ const MEDIUM_TYPES = ['GraphSidecar', 'GraphImage'] as const
 type MediumType = (typeof MEDIUM_TYPES)[number]
 export const isValidMediumType = (s: any): s is MediumType => MEDIUM_TYPES.includes(s)
 
-export interface Metadata {
-	node: {
-		__typename: MediumType
-		id: string
-		shortcode: string
-		dimensions: { height: number; width: number }
-		display_url: string
-		accessibility_caption: string
-		// edge_media_to_caption: {
-		// 	edges: [{ node: { text: 'Ist doch viel passiert \ud83c\udf42' } }]
-		// }
-		edge_sidecar_to_children?: {
-			edges: {
-				node: {
-					__typename: 'GraphImage'
-					id: string
-					shortcode: string
-					dimensions: { height: number; width: number }
-					display_url: string
-					accessibility_caption: string
-				}
-			}[]
-		}
+interface NodeBase {
+	__typename: string
+	shortcode?: string
+	dimensions: { height: number; width: number }
+	accessibility_caption: string | null
+	display_url: string
+}
+
+export interface NodeImage extends NodeBase {
+	__typename: 'GraphImage'
+}
+
+export interface NodeSidecar extends NodeBase {
+	__typename: 'GraphSidecar'
+	edge_sidecar_to_children: {
+		edges: {
+			node: Node
+		}[]
 	}
+}
+
+interface NodeOther extends NodeBase {
+	__typename: '_other'
+}
+
+type Node = NodeSidecar | NodeImage | NodeOther
+
+export const isImageNode = (node: Node): node is NodeImage => node.__typename === 'GraphImage'
+
+export interface Metadata {
+	node: Node
 }
 
 export interface Post {
 	caption: string
+	shortcode: string
 	media: {
-		id: string
+		// id: string
 		url: string
-		alt: string
+		alt: string | null
 	}[]
 }

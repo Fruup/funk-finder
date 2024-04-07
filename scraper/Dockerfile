@@ -7,4 +7,5 @@ RUN apt-get install pip -y
 
 RUN pip install instaloader
 
-CMD bash
+# CMD bash
+CMD bun run src/main.ts
