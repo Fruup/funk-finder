@@ -42,11 +42,15 @@ func ImageToText(url string) (string, error) {
 	client := gosseract.NewClient()
 	defer client.Close()
 
+	client.SetConfigFile("./tessdata/configs/default.txt")
 	client.SetTessdataPrefix("./tessdata")
 	client.SetLanguage("deu")
+	client.SetWhitelist("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
 
 	client.SetImage(fileName)
 	text, err := client.Text()
 
 	return NormalizeText(text), err
+
+	// TODO: use CLI version....... it yields better results.
 }

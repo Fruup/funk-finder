@@ -106,7 +106,7 @@ async function main() {
 	const pb = new Pocketbase('http://host.docker.internal:8090')
 	// const pb = new Pocketbase('http://db:8080')
 
-	for (const post of posts.slice(600, 610)) {
+	for (const post of posts.slice(601, 605)) {
 		try {
 			console.log(`Working on "${post.caption.slice(0, 32) + '...'}"`)
 

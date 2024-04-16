@@ -27,7 +27,7 @@
 	Posts loaded!
 
 	<SearchBox {posts} bind:ids />
-
+<!-- 
 	<ul>
 		{#each filteredPosts as post, i (post.id)}
 			{@const firstMedium = post.media?.[0]}
@@ -46,7 +46,7 @@
 				{/if}
 			</li>
 		{/each}
-	</ul>
+	</ul> -->
 {:catch error}
 	Error!
 	{error}
