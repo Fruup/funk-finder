@@ -9,15 +9,25 @@
 	},
 	"hide-files.files": [],
 	"cSpell.words": [
+		"chromadb",
 		"godotenv",
 		"gosseract",
+		"hnsw",
 		"instaloader",
 		"leonmaj",
+		"metadatas",
+		"Metadatas",
+		"openai",
+		"OPENAI",
 		"otiai",
+		"pocketbase",
+		"Pocketbase",
 		"sessionfile",
 		"shortcode",
 		"tessdata",
-		"tesseract"
+		"tesseract",
+		"traineddata",
+		"xenova"
 	],
 	"github.copilot.enable": {
 		"*": true,

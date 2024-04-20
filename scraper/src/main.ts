@@ -1,45 +1,51 @@
 import { execSync } from 'node:child_process'
-import { readdirSync, rmdirSync } from 'node:fs'
+import fs from 'node:fs'
 import { join } from 'node:path'
-import { isImageNode, type Metadata, type Post } from './types'
+import { isImageNode, isSidecarNode, type Metadata, type Post } from './types'
 import Pocketbase, { type RecordModel } from 'pocketbase'
 import type * as Db from '@funk-finder/db/types/models'
 
 const production = process.env.NODE_ENV === 'production'
-const TARGET = 'funk'
-// const TARGET = 'leonmaj7'
 
-async function load() {
-	const result = execSync(`
+const config = {
+	// pocketbasePath: 'http://localhost:8080',
+	pocketbasePath: 'http://host.docker.internal:8080',
+	target: 'funk',
+	tempDir: '.tmp',
+}
+
+async function loadPosts() {
+	execSync(
+		`
     instaloader \
       --no-pictures \
       --no-videos \
       --no-profile-pic \
       --no-compress-json \
       --latest-stamps ./state/timestamps.ini \
-      --login leonmaj7 \
-			--sessionfile ./state/session \
-      ${TARGET}
-  `)
+      ${config.target}
+  `,
+		{ stdio: 'inherit' },
+	)
 
-	console.log(result.toString('utf8'))
+	// --login leonmaj7 \
 }
 
 async function collect() {
 	const posts: Post[] = []
-	const dir = readdirSync(TARGET, { recursive: false, withFileTypes: true })
+	const dir = fs.readdirSync(config.target, { recursive: false, withFileTypes: true })
 
 	for (const entry of dir) {
 		if (!entry.isFile()) continue
 		if (!entry.name.endsWith('_UTC.json')) continue
 
-		console.info(`Processing "${entry.name}"...`)
+		console.info(`Processing "${entry.name.replaceAll(/\s+/g, ' ')}"...`)
 
-		const caption = await Bun.file(join(TARGET, entry.name.slice(0, -5) + '.txt'))
+		const caption = await Bun.file(join(config.target, entry.name.slice(0, -5) + '.txt'))
 			.text()
 			.catch(() => '')
 
-		const metadata: Metadata | null = await Bun.file(join(TARGET, entry.name))
+		const metadata: Metadata | null = await Bun.file(join(config.target, entry.name))
 			.json()
 			.catch((error) => {
 				console.error(error)
@@ -58,14 +64,14 @@ async function collect() {
 			media: [],
 		}
 
-		if (metadata.node.__typename === 'GraphImage') {
+		if (isImageNode(metadata.node)) {
 			post.media = [
 				{
 					url: metadata.node.display_url,
 					alt: metadata.node.accessibility_caption,
 				},
 			]
-		} else if (metadata.node.__typename === 'GraphSidecar') {
+		} else if (isSidecarNode(metadata.node)) {
 			post.media = metadata.node.edge_sidecar_to_children.edges
 				.map((edge) => edge.node)
 				.filter(isImageNode)
@@ -74,6 +80,7 @@ async function collect() {
 					alt: node.accessibility_caption,
 				}))
 		} else {
+			// Skip videos for now.
 			continue
 		}
 
@@ -83,49 +90,86 @@ async function collect() {
 	return posts
 }
 
+const id = () => Math.floor(0xffffffff * Math.random()).toString(16)
+
+async function ocr(url: string) {
+	fs.mkdirSync(config.tempDir, { recursive: true })
+	const filename = id()
+	const input = `${config.tempDir}/${filename}.jpg`
+	const output = `${config.tempDir}/${filename}`
+
+	// Download the image.
+	execSync(`curl -s -o "${input}" "${url}"`)
+
+	// Perform OCR.
+	execSync(
+		`
+		tesseract \
+			--tessdata-dir ./tessdata \
+			${input} \
+			${output} \
+			-l deu+eng \
+			--psm 3
+	`,
+		{ stdio: 'inherit' },
+	)
+
+	const text = await Bun.file(output + '.txt').text()
+
+	// TODO: delete files
+
+	return text.trim()
+}
+
 function cleanup() {
 	// Delete the downloaded posts.
-	rmdirSync(TARGET, { recursive: true })
+	// fs.rmdirSync(config.target, { recursive: true })
+
+	// Delete downloaded images.
+	fs.rmdirSync(config.tempDir, { recursive: true })
 }
 
 async function main() {
-	// Load new posts from Instagram.
-	// await load()
+	let posts: Post[]
 
-	// Collect metadata from the downloaded posts.
+	if (false) {
+		// Load new posts from Instagram.
+		// await loadPosts()
 
-	// const posts = await collect()
+		// Collect metadata from the downloaded posts.
+		posts = await collect()
 
-	// if (!production) {
-	// 	Bun.write('./logs/posts.json', JSON.stringify(posts, null, 2), { createPath: true })
-	// }
-
-	const posts: Post[] = await Bun.file('./logs/posts.json').json()
+		if (!production) {
+			Bun.write('./logs/posts.json', JSON.stringify(posts, null, 2), { createPath: true })
+		}
+	} else {
+		posts = await Bun.file('./logs/posts.json').json()
+	}
 
 	// Save the posts to the database.
-	const pb = new Pocketbase('http://host.docker.internal:8090')
-	// const pb = new Pocketbase('http://db:8080')
+	const pb = new Pocketbase(config.pocketbasePath)
 
-	for (const post of posts.slice(601, 605)) {
+	for (const post of posts) {
 		try {
-			console.log(`Working on "${post.caption.slice(0, 32) + '...'}"`)
+			console.log(`Working on "${post.caption.slice(0, 64) + '...'}"`)
 
-			const postRecord = await pb.collection<RecordModel & Db.Post>('posts').create({
-				caption: post.caption,
-				shortcode: post.shortcode,
-			} satisfies Partial<Db.Post>)
-
-			if (!postRecord?.id) {
-				continue
-			}
+			const mediaIds: string[] = []
 
 			for (const medium of post.media) {
+				const text = await ocr(medium.url)
+
 				await pb.collection('media').create({
 					url: medium.url,
 					alt: medium.alt ?? undefined,
-					post: postRecord.id,
+					text,
 				} satisfies Partial<Db.Medium<false>>)
 			}
+
+			await pb.collection<RecordModel & Db.Post<false>>('posts').create({
+				caption: post.caption,
+				shortcode: post.shortcode,
+				media: mediaIds,
+			} satisfies Partial<Db.Post<false>>)
 		} catch (error) {
 			console.error(error)
 		}
@@ -135,4 +179,6 @@ async function main() {
 	// if (production) cleanup()
 }
 
-await main()
+if (import.meta.main) {
+	await main()
+}

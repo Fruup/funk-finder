@@ -8,15 +8,15 @@ Each **MEDIUM** has text associated with it.
 
 ```ts
 interface Medium {
-  id: string
-  text: string
+	id: string
+	text: string
 }
 
 interface Post {
-  id: string
-  caption: string
-  media: Medium[] // JSON field
-  status: "pending" | "ready"
+	id: string
+	caption: string
+	media: Medium[] // JSON field
+	status: 'pending' | 'ready'
 }
 ```
 
@@ -28,3 +28,7 @@ interface Post {
 -> existing posts are filtered out
 -> posts uploaded to database
 -> OCR service takes unprocessed posts and generates text for each image, stores in db
+
+## Ideas
+
+- Chroma DB

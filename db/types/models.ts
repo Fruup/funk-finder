@@ -2,12 +2,13 @@ export interface Medium<Expand extends boolean = true> {
 	url: string
 	alt?: string
 	text?: string
-	post: Expand extends true ? Post : string
+	// post: Expand extends true ? Post : string
 }
 
-export interface Post {
+export interface Post<Expand extends boolean = true> {
 	shortcode: string
 	caption?: string
+	media: Expand extends true ? Medium[] : string[]
 }
 
 // type MultipleReference<

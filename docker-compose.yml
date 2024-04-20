@@ -21,20 +21,34 @@ services:
     expose:
       - 8080
     volumes:
-      - ./db/pb:/pb
+      - ./db/pb/pb_migrations:/pb/pb_migrations
     networks:
       - funk-finder
 
   scraper:
     build:
       dockerfile: scraper/Dockerfile
-    working_dir: /work
+      target: dev
+    working_dir: /work/scraper
     volumes:
-      - ./scraper:/work
+      - ./scraper:/work/scraper
+      - ./db:/work/db:ro
+    ports:
+      - 6499:6499
     networks:
       - funk-finder
 
-  # ocr:
+  chroma:
+    build:
+      dockerfile: chroma/Dockerfile
+      # target: dev
+    # working_dir: /work
+    # volumes:
+    # - ./chroma/work:/work
+    ports:
+      - 8000:8000
+    networks:
+      - funk-finder
 
 networks:
   funk-finder:

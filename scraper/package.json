@@ -3,13 +3,16 @@
 	"module": "index.ts",
 	"type": "module",
 	"devDependencies": {
-		"@funk-finder/db": "../db",
 		"@types/bun": "latest"
 	},
 	"peerDependencies": {
 		"typescript": "^5.4.4"
 	},
 	"dependencies": {
+		"@funk-finder/db": "../db",
+		"@xenova/transformers": "xenova/transformers.js#v3",
+		"chromadb": "^1.8.1",
+		"openai": "^4.38.2",
 		"pocketbase": "^0.21.1"
 	}
 }

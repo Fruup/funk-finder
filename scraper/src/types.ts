@@ -30,6 +30,7 @@ interface NodeOther extends NodeBase {
 type Node = NodeSidecar | NodeImage | NodeOther
 
 export const isImageNode = (node: Node): node is NodeImage => node.__typename === 'GraphImage'
+export const isSidecarNode = (node: Node): node is NodeSidecar => node.__typename === 'GraphSidecar'
 
 export interface Metadata {
 	node: Node
