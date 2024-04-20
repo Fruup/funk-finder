@@ -11,6 +11,7 @@ const config = {
 	// pocketbasePath: 'http://localhost:8080',
 	pocketbasePath: 'http://host.docker.internal:8080',
 	target: 'funk',
+	// target: 'leonmaj7',
 	tempDir: '.tmp',
 }
 
@@ -29,6 +30,16 @@ async function loadPosts() {
 	)
 
 	// --login leonmaj7 \
+}
+
+const readTimeStamp = (filename: string) => {
+	const regexp = /^(\d{4})-(\d{2})-(\d{2})_(\d{2})-(\d{2})-(\d{2})/g
+	const match = filename.match(regexp)
+	if (!match) return null
+
+	const [year, month, date, hour, minute, second] = match.slice(1).map(parseInt)
+
+	return Date.UTC(year, month - 1, date, hour, minute, second)
 }
 
 async function collect() {
@@ -62,6 +73,7 @@ async function collect() {
 			caption: caption.trim(),
 			shortcode: metadata.node.shortcode ?? '',
 			media: [],
+			time: readTimeStamp(entry.name),
 		}
 
 		if (isImageNode(metadata.node)) {
@@ -132,9 +144,9 @@ function cleanup() {
 async function main() {
 	let posts: Post[]
 
-	if (false) {
+	if (true) {
 		// Load new posts from Instagram.
-		// await loadPosts()
+		await loadPosts()
 
 		// Collect metadata from the downloaded posts.
 		posts = await collect()
@@ -151,7 +163,7 @@ async function main() {
 
 	for (const post of posts) {
 		try {
-			console.log(`Working on "${post.caption.slice(0, 64) + '...'}"`)
+			console.log(`Working on "${post.caption.slice(0, 64).replace(/\s+/g, ' ') + '...'}"`)
 
 			const mediaIds: string[] = []
 

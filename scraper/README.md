@@ -1,15 +1,15 @@
-# @funk-finder/scraper
+# `@funk-finder/scraper`
 
-To install dependencies:
+## `state/timestamps.ini`
 
-```bash
-bun install
+Example:
+
+```ini
+[funk]
+profile-id = 9543220683
+post-timestamp = 2024-04-20T12:30:15.000000+0000
+
+[leonmaj7]
+profile-id = 1986199473
+post-timestamp = 2024-03-24T18:05:16.000000+0000
 ```
-
-To run:
-
-```bash
-bun run index.ts
-```
-
-This project was created using `bun init` in bun v1.0.26. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.

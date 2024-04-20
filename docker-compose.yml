@@ -21,6 +21,7 @@ services:
     expose:
       - 8080
     volumes:
+      - ./db/pb/pb_data:/pb/pb_data
       - ./db/pb/pb_migrations:/pb/pb_migrations
     networks:
       - funk-finder
@@ -33,8 +34,6 @@ services:
     volumes:
       - ./scraper:/work/scraper
       - ./db:/work/db:ro
-    ports:
-      - 6499:6499
     networks:
       - funk-finder
 
@@ -43,8 +42,8 @@ services:
       dockerfile: chroma/Dockerfile
       # target: dev
     # working_dir: /work
-    # volumes:
-    # - ./chroma/work:/work
+    volumes:
+      - chroma-data:/chroma/chroma
     ports:
       - 8000:8000
     networks:
@@ -53,3 +52,11 @@ services:
 networks:
   funk-finder:
     driver: bridge
+
+volumes:
+  chroma-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: ./chroma/data
+      o: bind

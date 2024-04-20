@@ -14,7 +14,10 @@ const config = {
 	chromaPath: 'http://host.docker.internal:8000',
 	// pocketbasePath: 'http://localhost:8080',
 	pocketbasePath: 'http://host.docker.internal:8080',
-	embeddingFunction: 'local' satisfies 'local' | 'openai',
+	// collectionName: 'media',
+	collectionName: 'media-openai',
+	embeddingFunction: 'openai' satisfies 'local' | 'openai',
+	// embeddingFunction: 'local' satisfies 'local' | 'openai',
 	openAiKey: import.meta.env.OPENAI_API_KEY,
 }
 
@@ -30,7 +33,9 @@ async function init() {
 
 	// embedder
 	if (config.embeddingFunction === 'local') {
-		embedder = new TransformersEmbeddingFunction()
+		embedder = new TransformersEmbeddingFunction({
+			// model,
+		})
 	} else if (config.embeddingFunction === 'openai') {
 		if (!config.openAiKey) {
 			throw Error('OpenAI API key is required.')
@@ -45,7 +50,7 @@ async function init() {
 	}
 
 	mediaCollection = await chroma.getOrCreateCollection({
-		name: 'media',
+		name: config.collectionName,
 		embeddingFunction: embedder,
 		metadata: { 'hnsw:space': 'cosine' },
 	})
@@ -55,26 +60,46 @@ async function init() {
 	// insert media
 	const pb = new Pocketbase(config.pocketbasePath)
 
-	const media = await pb.collection<Db.Medium & RecordModel>('media').getFullList()
-	const filteredMedia = media.filter(
-		(medium): medium is typeof medium & { text: string } => !!medium.text,
-	)
+	const ids: string[] = []
+	const documents: string[] = []
+	const metadatas: { type: 'medium' | 'post' }[] = []
 
-	await mediaCollection.add({
-		ids: filteredMedia.map(({ id }) => id),
-		documents: filteredMedia.map(({ text }) => text),
-	})
+	const media = await pb.collection<Db.Medium & RecordModel>('media').getFullList()
+	for (const medium of media) {
+		if (!medium.text) continue
+
+		ids.push(medium.id)
+		documents.push(medium.text)
+		metadatas.push({ type: 'medium' })
+	}
 
 	// insert posts
 	const posts = await pb.collection<Db.Post & RecordModel>('posts').getFullList()
-	const filteredPosts = posts.filter(
-		(post): post is typeof post & { caption: string } => !!post.caption,
-	)
+	for (const post of posts) {
+		if (!post.caption) continue
 
-	await mediaCollection.add({
-		ids: filteredPosts.flatMap(({ id }) => id),
-		documents: filteredPosts.map(({ caption }) => caption),
-	})
+		ids.push(post.id)
+		documents.push(post.caption)
+		metadatas.push({ type: 'post' })
+	}
+
+	if (ids.length) {
+		console.log(`📥 Inserting ${ids.length} item(s) to the database.`)
+
+		/**
+		 * Has to be done in batches because otherwise
+		 * Chroma throws (merely saying "Killed").
+		 */
+		const BATCH_SIZE = 10
+
+		for (let i = 0; i < ids.length; i += BATCH_SIZE) {
+			await mediaCollection.add({
+				ids: ids.slice(i, i + BATCH_SIZE),
+				documents: documents.slice(i, i + BATCH_SIZE),
+				metadatas: metadatas.slice(i, i + BATCH_SIZE),
+			})
+		}
+	}
 }
 
 async function search(text: string) {
@@ -93,18 +118,18 @@ async function search(text: string) {
 async function main() {
 	await init()
 
-	const text = process.argv[2]
-	if (!text) {
-		throw Error('Please provide a text to search.')
-	}
+	// const text = process.argv[2]
+	// if (!text) {
+	// 	throw Error('Please provide a text to search.')
+	// }
 
-	const result = await search(text)
+	// const result = await search(text)
 
-	console.log(result)
+	// console.log(result)
 
 	// await Bun.write('logs/result.json', JSON.stringify(result, null, 2), { createPath: true })
 }
 
 if (import.meta.main) {
-	main()
+	await main()
 }

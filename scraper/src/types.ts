@@ -39,6 +39,7 @@ export interface Metadata {
 export interface Post {
 	caption: string
 	shortcode: string
+	time: number | null
 	media: {
 		// id: string
 		url: string
