@@ -7,28 +7,25 @@
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-    "lint": "prettier --check .",
-    "format": "prettier --write ."
+    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
   },
   "devDependencies": {
+    "@funk-finder/db": "../db",
     "@sveltejs/adapter-auto": "^3.0.0",
     "@sveltejs/kit": "^2.0.0",
     "@sveltejs/vite-plugin-svelte": "^3.0.0",
-    "@types/node": "^20.11.19",
-    "prettier": "^3.1.1",
-    "prettier-plugin-svelte": "^3.1.2",
-    "svelte": "^4.2.7",
+    "sass": "^1.75.0",
+    "svelte": "^5.0.0-next.1",
     "svelte-check": "^3.6.0",
     "tslib": "^2.4.1",
     "typescript": "^5.0.0",
-    "vite": "^5.0.3",
-    "vite-plugin-mkcert": "^1.17.3"
+    "vite": "^5.0.3"
   },
   "type": "module",
   "dependencies": {
-    "@funk-finder/db": "../db",
-    "fuse.js": "^7.0.0",
+    "@xenova/transformers": "xenova/transformers.js#v3",
+    "chromadb": "^1.8.1",
+    "openai": "^4.38.2",
     "pocketbase": "^0.21.1"
   }
 }

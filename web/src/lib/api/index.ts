@@ -1,21 +1,15 @@
-import { error } from '@sveltejs/kit'
-import { Api, type App } from '$lib/types'
-import Pocketbase from 'pocketbase'
-
-let pb: Pocketbase
-
-const throwFetchResponse = async (response: Response): Promise<never> => {
-	throw error(response.status as any, {
-		message: JSON.stringify(await response.json()),
-	})
-}
+import type { SearchResponse } from '$lib/types'
 
 export default {
-	async initialize() {
-		pb = new Pocketbase('http://localhost:8080')
-	},
+	async search(text: string) {
+		const query = new URLSearchParams({ q: text })
+		const response = await fetch(`/api/v1/search?${query}`)
 
-	async getPosts(): Promise<App.Post[]> {
-		// throw throwFetchResponse(response)
+		if (response.ok) {
+			const result: SearchResponse = await response.json()
+			return result.toSorted((a, b) => b.score - a.score)
+		}
+
+		throw new Error(response.statusText)
 	},
 }
