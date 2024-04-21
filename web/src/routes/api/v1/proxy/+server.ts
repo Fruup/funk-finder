@@ -1,6 +1,6 @@
 import { error, type RequestHandler } from '@sveltejs/kit'
 
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url, fetch }) => {
 	const urlToProxy = url.searchParams.get('q')
 	if (!urlToProxy) throw error(400, 'Missing query parameter "q".')
 

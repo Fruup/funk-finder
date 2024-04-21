@@ -2,4 +2,10 @@
 	import '../styles/global.scss'
 </script>
 
+<h1>FUNK FINDER</h1>
+<p>
+	🔍 Durchsuche
+	<a href="https://instagram.com/funk" target="_blank" rel="noreferrer nofollow"> @funk </a> Posts
+</p>
+
 <slot />

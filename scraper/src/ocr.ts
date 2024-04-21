@@ -1,5 +1,7 @@
 import fs from 'fs'
 import { execSync } from 'child_process'
+import Pocketbase, { type RecordModel } from 'pocketbase'
+import type * as Db from '@funk-finder/db/types/models'
 
 export async function ocr(options: {
 	file?: string
@@ -38,8 +40,7 @@ export async function ocr(options: {
 			${input} \
 			${options.output || output} \
 			-l ${options.langs?.join('+') || 'deu+eng'} \
-			--psm ${options.psm ?? 3} \
-			--oem 2 \
+			--psm ${options.psm ?? 3}
 	`,
 		{ stdio: 'inherit' },
 	)
@@ -52,3 +53,78 @@ export async function ocr(options: {
 }
 
 const id = () => Math.floor(0xffffffff * Math.random()).toString(16)
+
+if (import.meta.main) {
+	const pb = new Pocketbase(import.meta.env.POCKETBASE_PATH)
+
+	// Normalize
+	if (false) {
+		const media = await pb.collection<Db.Medium & RecordModel>('media').getFullList({
+			filter: `text = ""`,
+		})
+
+		for (const medium of media) {
+			await pb.collection<Db.Medium & RecordModel>('media').update(medium.id, { text: null })
+		}
+	}
+
+	const media = await pb.collection<Db.Medium & RecordModel>('media').getFullList({
+		filter: `text = null`,
+	})
+
+	const timing = {
+		start: Date.now(),
+		n: 0,
+		elapsed: 0,
+		update(_n: number) {
+			this.n = _n
+			this.elapsed = Date.now() - this.start
+		},
+		progress() {
+			return `${timing.n.toString().padStart(media.length.toString().length, ' ')}/${media.length}`
+		},
+		eta() {
+			const t = (this.elapsed / this.n) * (media.length - this.n)
+			const time = new Date()
+			time.setMilliseconds(time.getMilliseconds() + t)
+			return time
+		},
+		elapsedTime() {
+			const hours = Math.floor(this.elapsed / 1000 / 60 / 60)
+			const minutes = Math.floor((this.elapsed / 1000 / 60) % 60)
+			const seconds = Math.floor((this.elapsed / 1000) % 60)
+
+			return (
+				`${hours.toString().padStart(2, '0')}:` +
+				`${minutes.toString().padStart(2, '0')}:` +
+				`${seconds.toString().padStart(2, '0')}`
+			)
+		},
+	}
+
+	for (let i = 0; i < media.length; ++i) {
+		const medium = media[i]
+		if (!medium.url) continue
+
+		timing.update(i)
+
+		try {
+			console.log(`💡 (${timing.progress()})`, `Processing "${medium.id}"...`)
+
+			const text = await ocr({ url: medium.url })
+			if (!text) {
+				console.log('  No text extracted. Skipping...')
+				continue
+			}
+
+			console.log(`  Extracted text "${text.slice(0, 50)}...". Updating...`)
+
+			await pb.collection<Db.Medium & RecordModel>('media').update(medium.id, { text })
+		} catch (error) {
+			console.error(error)
+		}
+
+		timing.update(i)
+		console.log(`🕒 Elapsed: ${timing.elapsedTime()} | ETA: ${timing.eta().toLocaleString()}`)
+	}
+}

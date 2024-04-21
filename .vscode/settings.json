@@ -26,6 +26,7 @@
 		"shortcode",
 		"tessdata",
 		"tesseract",
+		"tiktoken",
 		"traineddata",
 		"xenova"
 	],

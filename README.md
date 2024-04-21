@@ -1,5 +1,11 @@
 # Funk Finder
 
+## TODO
+
+- [ ] design
+- [ ] disclaimer
+- [ ] footer (GH link, imprint)
+
 ## Ideas
 
 - [x] Chroma DB

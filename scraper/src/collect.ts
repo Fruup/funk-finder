@@ -36,12 +36,12 @@ async function loadPosts() {
 	// --login leonmaj7 \
 }
 
-const readTimeStamp = (filename: string) => {
+export const readTimeStamp = (filename: string): number | null => {
 	const regexp = /^(\d{4})-(\d{2})-(\d{2})_(\d{2})-(\d{2})-(\d{2})/g
-	const match = filename.match(regexp)
+	const match = regexp.exec(filename)
 	if (!match) return null
 
-	const [year, month, date, hour, minute, second] = match.slice(1).map(parseInt)
+	const [year, month, date, hour, minute, second] = match.slice(1).map(Number)
 
 	return Date.UTC(year, month - 1, date, hour, minute, second)
 }

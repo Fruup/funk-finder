@@ -6,20 +6,21 @@ import {
 	TransformersEmbeddingFunction,
 	type IEmbeddingFunction,
 } from 'chromadb'
-import Pocketbase, { type RecordModel } from 'pocketbase'
+import Pocketbase from 'pocketbase'
 import type * as Db from '@funk-finder/db/types/models'
 import OpenAI from 'openai'
+import { refineText } from './refineText'
 
 const config = {
-	// chromaPath: 'http://localhost:8000',
-	chromaPath: 'http://host.docker.internal:8000',
-	// pocketbasePath: 'http://localhost:8080',
-	pocketbasePath: 'http://host.docker.internal:8080',
-	// collectionName: 'media',
-	collectionName: 'media-openai',
+	chromaPath: 'http://localhost:8000',
+	// chromaPath: 'http://host.docker.internal:8000',
+	pocketbasePath: 'http://localhost:8080',
+	// pocketbasePath: 'http://host.docker.internal:8080',
+	collectionName: 'media',
+	openAiKey: import.meta.env.OPENAI_API_KEY,
 	embeddingFunction: 'openai' satisfies 'local' | 'openai',
 	// embeddingFunction: 'local' satisfies 'local' | 'openai',
-	openAiKey: import.meta.env.OPENAI_API_KEY,
+	embeddingModel: import.meta.env.EMBEDDING_MODEL,
 }
 
 let openai: OpenAI
@@ -55,7 +56,7 @@ async function init() {
 
 		embedder = new OpenAIEmbeddingFunction({
 			openai_api_key: config.openAiKey,
-			openai_model: 'text-embedding-3-small',
+			openai_model: config.embeddingModel,
 		})
 	} else {
 		throw Error(`Invalid embedding function "${config.embeddingFunction}".`)
@@ -69,41 +70,35 @@ async function init() {
 
 	console.log(`💡 Database contains ${await mediaCollection.count()} item(s).`)
 
-	// insert media
 	const pb = new Pocketbase(config.pocketbasePath)
 
 	const ids: string[] = []
 	const documents: string[] = []
 	const metadatas: { type: 'medium' | 'post' }[] = []
 
-	const media = await pb.collection<Db.Medium & RecordModel>('media').getFullList()
+	// insert media
+	// TODO
+	const { items: media } = await pb.collection<Db.Medium<true>>('media').getList(1, 100)
+
 	for (const medium of media) {
 		if (!medium.text) continue
 
+		// Refine the text and remove clutter.
+		const document = await refineText(medium.text)
+
 		ids.push(medium.id)
-		documents.push(medium.text)
+		documents.push(document)
 		metadatas.push({ type: 'medium' })
 	}
 
 	// insert posts
-	const posts = await pb.collection<Db.Post & RecordModel>('posts').getFullList()
+	// TODO
+	const { items: posts } = await pb.collection<Db.Post<true>>('posts').getList(1, 100)
+
 	for (const post of posts) {
 		if (!post.caption) continue
 
-		let document = post.caption
-
-		// TODO: refine the text using an AI assistant
-		const response = await openai.beta.threads.createAndRun({
-			assistant_id: 'TODO',
-			model: 'gpt-3.5-turbo',
-			thread: {
-				messages: [{ role: 'user', content: document }],
-			},
-		})
-
-		if (response.status === 'completed') {
-			// TODO
-		}
+		const document = post.caption
 
 		ids.push(post.id)
 		documents.push(document)
@@ -111,7 +106,7 @@ async function init() {
 	}
 
 	if (ids.length) {
-		console.log(`📥 Inserting ${ids.length} item(s) to the database.`)
+		console.log(`📥 Inserting ${ids.length} item(s)...`)
 
 		/**
 		 * Has to be done in batches because otherwise
@@ -120,7 +115,9 @@ async function init() {
 		const BATCH_SIZE = 10
 
 		for (let i = 0; i < ids.length; i += BATCH_SIZE) {
-			await mediaCollection.add({
+			console.log(`💡 ${i.toString().padStart(ids.length.toString().length, ' ')}/${ids.length}`)
+
+			await mediaCollection.upsert({
 				ids: ids.slice(i, i + BATCH_SIZE),
 				documents: documents.slice(i, i + BATCH_SIZE),
 				metadatas: metadatas.slice(i, i + BATCH_SIZE),

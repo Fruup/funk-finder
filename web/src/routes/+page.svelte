@@ -4,8 +4,8 @@
 	import { flip } from 'svelte/animate'
 	import SearchField from './SearchField.svelte'
 	import { scale } from 'svelte/transition'
+	import DebugContainer from './DebugContainer.svelte'
 
-	let foo = ''
 	let loading = false
 	let items: SearchResponseItem[] = []
 
@@ -18,12 +18,10 @@
 
 		try {
 			items = await api.search(text)
-			foo = JSON.stringify(items, null, 2)
 		} catch (e) {
 			console.error(e)
 
 			items = []
-			if (e) foo = e.toString()
 		}
 
 		loading = false
@@ -59,7 +57,9 @@
 	</ul>
 </div>
 
-<pre><code>{foo}</code></pre>
+<p>💡 Haven't found what you are looking for? Specify your query further to narrow it down!</p>
+
+<!-- <DebugContainer>{foo}</DebugContainer> -->
 
 <style lang="scss">
 	.page {
@@ -77,17 +77,20 @@
 		margin: 2rem auto;
 	}
 
-	pre {
-		display: none;
+	li {
+		width: 100%;
+		height: auto;
+		aspect-ratio: 1;
 
-		background: #f4f4f4;
-		padding: 1rem;
-		overflow: auto;
+		:global(*) {
+			display: block;
+			width: 100%;
+			height: 100%;
+		}
 	}
 
 	img {
-		width: 100%;
-		// height: 100%;
-		// object-fit: cover;
+		object-fit: cover;
+		object-position: center;
 	}
 </style>

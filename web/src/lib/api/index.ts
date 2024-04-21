@@ -11,8 +11,7 @@ const api = {
 		const response = await fetch(`/api/v1/search?${query}`)
 
 		if (response.ok) {
-			const result: SearchResponse = await response.json()
-			return result.toSorted((a, b) => b.score - a.score)
+			return (await response.json()) as SearchResponse
 		}
 
 		throw new Error(response.statusText)

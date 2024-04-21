@@ -11,9 +11,16 @@
 	$: debouncedSearch(value)
 </script>
 
-<input bind:value class:highlighted />
+<label>
+	<div class="label-text">bloibla</div>
+	<input bind:value class:highlighted />
+</label>
 
 <style lang="scss">
+	.label-text {
+		margin-bottom: 0.25rem;
+	}
+
 	input {
 		font-size: 2rem;
 		border: 1px solid #ccc;
@@ -21,6 +28,9 @@
 		padding: 1rem;
 
 		transition: all 300ms ease;
+
+		background-color: var(--surface-1);
+		color: white;
 
 		&.highlighted {
 			scale: 2;

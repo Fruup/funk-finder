@@ -1,25 +1,43 @@
-export interface Medium<Expand extends keyof Medium | null = null> {
+import type { RecordModel } from 'pocketbase'
+
+export type Medium<
+	/**
+	 * Whether to include the record fields (id, created, updated etc.).
+	 */
+	IsModel extends boolean = false,
+	/**
+	 * Which fields to expand (id -> model)
+	 */
+	Expand extends keyof Medium | null = null,
+> = {
 	url: string
 	alt?: string
 	text?: string
-	post?: Expand extends 'post' ? Post : string
+	post?: string
+	// post?: Expand extends 'post' ? Post : string
 	igId?: string
-}
+} & (IsModel extends true ? Model : {}) & {
+		expand: {
+			post: Expand extends 'post' ? Post : never
+		}
+	}
 
-export interface Post {
+export type Post<
+	/**
+	 * Whether to include the record fields (id, created, updated etc.).
+	 */
+	IsModel extends boolean = false,
+	/**
+	 * Which fields to expand (id -> model)
+	 */
+	// Expand extends keyof Medium | null = null,
+> = {
 	shortcode: string
 	caption?: string
 	igId?: string
 	time?: string // ISO datetime
+} & (IsModel extends true ? Model : {})
+
+type Model = {
+	[K in keyof RecordModel]: string extends K ? never : RecordModel[K]
 }
-
-// type MultipleReference<
-// 	Model extends RecordModel,
-// 	Expand extends boolean = false,
-// > = Expand extends true ? Model[] : string[]
-
-// export interface Post<Expand extends boolean> extends RecordModel {
-// 	caption?: string
-// 	media: MultipleReference<Medium, Expand>
-// 	status: 'pending' | 'finished'
-// }

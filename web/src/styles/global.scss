@@ -1,3 +1,10 @@
 :root {
-	background-color: #1f1f1f;
+	--surface-0: #1f1f1f;
+	--surface-1: #3f3f3f;
+}
+
+:root {
+	background-color: var(--surface-0);
+	color: #f1f1f1;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
