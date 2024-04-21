@@ -4,11 +4,16 @@ import {
 	IncludeEnum,
 	OpenAIEmbeddingFunction,
 	TransformersEmbeddingFunction,
+	type IEmbeddingFunction,
 } from 'chromadb'
 import Pocketbase, { type RecordModel } from 'pocketbase'
 import { env } from '$env/dynamic/private'
 import * as Db from '@funk-finder/db/types/models'
 import type { SearchResponse, SearchResponseItemType } from '$lib/types'
+
+const config = {
+	embedder: 'openai' satisfies 'openai' | 'local',
+}
 
 let chroma: ChromaClient
 let pb: Pocketbase
@@ -22,16 +27,22 @@ async function init() {
 	}
 
 	if (!collection) {
-		// const embeddingFunction = new TransformersEmbeddingFunction({})
+		let embeddingFunction: IEmbeddingFunction
 
-		if (!env.OPENAI_API_KEY) {
-			throw new Error('OPENAI_API_KEY is required')
+		if (config.embedder === 'local') {
+			embeddingFunction = new TransformersEmbeddingFunction({})
+		} else if (config.embedder === 'openai') {
+			if (!env.OPENAI_API_KEY) {
+				throw new Error('OPENAI_API_KEY is required')
+			}
+
+			embeddingFunction = new OpenAIEmbeddingFunction({
+				openai_model: 'text-embedding-3-small',
+				openai_api_key: env.OPENAI_API_KEY,
+			})
+		} else {
+			throw new Error('Invalid embedder: ' + config.embedder)
 		}
-
-		const embeddingFunction = new OpenAIEmbeddingFunction({
-			openai_model: 'text-embedding-3-small',
-			openai_api_key: env.OPENAI_API_KEY,
-		})
 
 		collection = await chroma.getCollection({
 			name: env.CHROMADB_COLLECTION,
@@ -67,30 +78,50 @@ export async function search(text: string): Promise<SearchResponse> {
 
 		if (metadata.type === 'medium') {
 			const medium = await pb.collection<Db.Medium & RecordModel>('media').getOne(id)
-			if (!medium.text) return
+			if (!medium.text) {
+				console.warn('Text not found for medium', medium.id)
+				return
+			}
+
+			const post = await pb
+				.collection<Db.Post & RecordModel>('posts')
+				.getFirstListItem(`medium = "${medium.id}"`)
+			if (!post) {
+				console.warn('Post not found for medium', medium.id)
+				return
+			}
 
 			response.push({
 				type: 'medium',
 				id: medium.id,
 				text: medium.text,
 				imageUrl: medium.url,
+				shortcode: post.shortcode,
 				score,
 			})
 		} else if (metadata.type === 'post') {
 			const post = await pb.collection<Db.Post & RecordModel>('posts').getOne(id)
 			if (!post.caption) return
 
+			const medium = await pb.collection<Db.Medium & RecordModel>('media').getOne(post.medium)
+			if (!medium) return
+
 			response.push({
 				type: 'post',
 				id: post.id,
 				text: post.caption,
 				shortcode: post.shortcode,
+				imageUrl: medium.imageUrl,
 				score,
 			})
 		}
 	})
 
-	await Promise.allSettled(promises)
+	;(await Promise.allSettled(promises)).forEach((promise) => {
+		if (promise.status === 'rejected') {
+			console.error(promise.reason)
+		}
+	})
 
 	return response
 }

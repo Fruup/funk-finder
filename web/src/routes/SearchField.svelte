@@ -1,23 +1,14 @@
 <script lang="ts">
 	import { createDebounce } from '$lib/utils'
 
-	let {
-		search,
-		loading = false,
-		highlighted = true,
-	}: {
-		search: (text: string) => void
-		loading: boolean
-		highlighted: boolean
-	} = $props()
+	export let search: (text: string) => any
+	export let highlighted: boolean = true
 
-	let value = $state('')
+	let value = ''
 
 	const debouncedSearch = createDebounce(500, search)
 
-	$effect(() => {
-		debouncedSearch(value)
-	})
+	$: debouncedSearch(value)
 </script>
 
 <input bind:value class:highlighted />

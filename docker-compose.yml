@@ -1,17 +1,19 @@
 version: '3.9'
 name: funk-finder
 services:
-  # web:
-  #   build:
-  #     dockerfile_inline: |
-  #       FROM oven/bun:slim
-  #       RUN bun upgrade
-  #   command: sh dev.sh
-  #   working_dir: /work/web
-  #   ports:
-  #     - 5173:5173
-  #   volumes:
-  #     - ./web:/work/web
+  web:
+    build:
+      dockerfile_inline: |
+        FROM oven/bun:slim
+    entrypoint: bash -c "bun i; bun dev"
+    working_dir: /work/web
+    ports:
+      - 5173:5173
+    volumes:
+      - ./web:/work/web
+      - ./db:/work/db:ro
+    networks:
+      - funk-finder
 
   db:
     build:
