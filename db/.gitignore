@@ -1,4 +1,5 @@
-/pb/*
+/pb/**/*.*
+
 !/pb/pb_migrations/
 !/pb/pb_hooks/
 !/pb/pb_data/backups/*.zip
