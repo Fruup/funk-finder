@@ -4,6 +4,7 @@ export const isValidMediumType = (s: any): s is MediumType => MEDIUM_TYPES.inclu
 
 interface NodeBase {
 	__typename: string
+	id: string
 	shortcode?: string
 	dimensions: { height: number; width: number }
 	accessibility_caption: string | null
@@ -40,9 +41,11 @@ export interface Post {
 	caption: string
 	shortcode: string
 	time: number | null
+	igId?: string
 	media: {
 		// id: string
 		url: string
 		alt: string | null
+		igId?: string
 	}[]
 }

@@ -8,6 +8,7 @@ import {
 } from 'chromadb'
 import Pocketbase, { type RecordModel } from 'pocketbase'
 import type * as Db from '@funk-finder/db/types/models'
+import OpenAI from 'openai'
 
 const config = {
 	// chromaPath: 'http://localhost:8000',
@@ -21,11 +22,22 @@ const config = {
 	openAiKey: import.meta.env.OPENAI_API_KEY,
 }
 
+let openai: OpenAI
 let chroma: ChromaClient
 let mediaCollection: Collection
 let embedder: IEmbeddingFunction
 
 async function init() {
+	if (!openai) {
+		if (!config.openAiKey) {
+			throw Error('OpenAI API key is required.')
+		}
+
+		openai = new OpenAI({
+			apiKey: config.openAiKey,
+		})
+	}
+
 	// Add media to chroma db.
 	chroma = new ChromaClient({
 		path: config.chromaPath,
@@ -78,8 +90,23 @@ async function init() {
 	for (const post of posts) {
 		if (!post.caption) continue
 
+		let document = post.caption
+
+		// TODO: refine the text using an AI assistant
+		const response = await openai.beta.threads.createAndRun({
+			assistant_id: 'TODO',
+			model: 'gpt-3.5-turbo',
+			thread: {
+				messages: [{ role: 'user', content: document }],
+			},
+		})
+
+		if (response.status === 'completed') {
+			// TODO
+		}
+
 		ids.push(post.id)
-		documents.push(post.caption)
+		documents.push(document)
 		metadatas.push({ type: 'post' })
 	}
 
@@ -102,34 +129,6 @@ async function init() {
 	}
 }
 
-async function search(text: string) {
-	const result = await mediaCollection.query({
-		nResults: 10,
-		queryTexts: text,
-		include: [
-			// IncludeEnum.Metadatas,
-			// IncludeEnum.Documents,
-		],
-	})
-
-	return result
-}
-
-async function main() {
-	await init()
-
-	// const text = process.argv[2]
-	// if (!text) {
-	// 	throw Error('Please provide a text to search.')
-	// }
-
-	// const result = await search(text)
-
-	// console.log(result)
-
-	// await Bun.write('logs/result.json', JSON.stringify(result, null, 2), { createPath: true })
-}
-
 if (import.meta.main) {
-	await main()
+	await init()
 }

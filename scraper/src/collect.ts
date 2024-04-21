@@ -2,7 +2,7 @@ import { execSync } from 'node:child_process'
 import fs from 'node:fs'
 import { join } from 'node:path'
 import { isImageNode, isSidecarNode, type Metadata, type Post } from './types'
-import Pocketbase, { type RecordModel } from 'pocketbase'
+import Pocketbase, { ClientResponseError, type RecordModel } from 'pocketbase'
 import type * as Db from '@funk-finder/db/types/models'
 
 const production = process.env.NODE_ENV === 'production'
@@ -23,12 +23,16 @@ async function loadPosts() {
       --no-videos \
       --no-profile-pic \
       --no-compress-json \
+			--sessionfile ./state/session \
       --latest-stamps ./state/timestamps.ini \
+			--login leonmaj7 \
       ${config.target}
   `,
 		{ stdio: 'inherit' },
 	)
 
+	// --load-cookies Firefox \
+	// --cookiefile ./state/cookies.sqlite \
 	// --login leonmaj7 \
 }
 
@@ -74,6 +78,7 @@ async function collect() {
 			shortcode: metadata.node.shortcode ?? '',
 			media: [],
 			time: readTimeStamp(entry.name),
+			igId: metadata.node.id,
 		}
 
 		if (isImageNode(metadata.node)) {
@@ -81,6 +86,7 @@ async function collect() {
 				{
 					url: metadata.node.display_url,
 					alt: metadata.node.accessibility_caption,
+					igId: metadata.node.id,
 				},
 			]
 		} else if (isSidecarNode(metadata.node)) {
@@ -90,6 +96,7 @@ async function collect() {
 				.map((node) => ({
 					url: node.display_url,
 					alt: node.accessibility_caption,
+					igId: node.id,
 				}))
 		} else {
 			// Skip videos for now.
@@ -102,58 +109,50 @@ async function collect() {
 	return posts
 }
 
-const id = () => Math.floor(0xffffffff * Math.random()).toString(16)
+async function writeTimestampsFile(file?: string, time?: Date) {
+	if (!time) {
+		// Get the last post's timestamp.
+		const pb = new Pocketbase(config.pocketbasePath)
+		const response = await pb
+			.collection<Db.Post & RecordModel>('posts')
+			.getFirstListItem('time != null', { sort: '-time' })
 
-async function ocr(url: string) {
-	fs.mkdirSync(config.tempDir, { recursive: true })
-	const filename = id()
-	const input = `${config.tempDir}/${filename}.jpg`
-	const output = `${config.tempDir}/${filename}`
+		if (!response.time) return
+		time = new Date(response.time)
+	}
 
-	// Download the image.
-	execSync(`curl -s -o "${input}" "${url}"`)
+	if (!time) return
+	const timestamp = time.toISOString()
 
-	// Perform OCR.
-	execSync(
-		`
-		tesseract \
-			--tessdata-dir ./tessdata \
-			${input} \
-			${output} \
-			-l deu+eng \
-			--psm 3
-	`,
-		{ stdio: 'inherit' },
+	await Bun.write(
+		file || './state/timestamps.ini',
+		//
+		`[funk]\n` + `profile-id = 9543220683\n` + `post-timestamp = ${timestamp}\n`,
 	)
-
-	const text = await Bun.file(output + '.txt').text()
-
-	// TODO: delete files
-
-	return text.trim()
 }
 
 function cleanup() {
 	// Delete the downloaded posts.
 	// fs.rmdirSync(config.target, { recursive: true })
-
 	// Delete downloaded images.
-	fs.rmdirSync(config.tempDir, { recursive: true })
+	// fs.rmdirSync(config.tempDir, { recursive: true })
 }
 
 async function main() {
 	let posts: Post[]
 
 	if (true) {
+		// await writeTimestampsFile()
+
 		// Load new posts from Instagram.
-		await loadPosts()
+		// await loadPosts()
 
 		// Collect metadata from the downloaded posts.
 		posts = await collect()
 
-		if (!production) {
-			Bun.write('./logs/posts.json', JSON.stringify(posts, null, 2), { createPath: true })
-		}
+		// if (!production) {
+		// 	Bun.write('./logs/posts.json', JSON.stringify(posts, null, 2), { createPath: true })
+		// }
 	} else {
 		posts = await Bun.file('./logs/posts.json').json()
 	}
@@ -165,25 +164,33 @@ async function main() {
 		try {
 			console.log(`Working on "${post.caption.slice(0, 64).replace(/\s+/g, ' ') + '...'}"`)
 
-			const mediaIds: string[] = []
+			const postRecord = await pb.collection<RecordModel & Db.Post>('posts').create({
+				caption: post.caption,
+				shortcode: post.shortcode,
+				igId: post.igId,
+			} satisfies Partial<Db.Post>)
 
 			for (const medium of post.media) {
-				const text = await ocr(medium.url)
-
 				await pb.collection('media').create({
 					url: medium.url,
 					alt: medium.alt ?? undefined,
-					text,
-				} satisfies Partial<Db.Medium<false>>)
+					igId: medium.igId,
+					post: postRecord.id,
+				} satisfies Partial<Db.Medium>)
 			}
-
-			await pb.collection<RecordModel & Db.Post<false>>('posts').create({
-				caption: post.caption,
-				shortcode: post.shortcode,
-				media: mediaIds,
-			} satisfies Partial<Db.Post<false>>)
 		} catch (error) {
-			console.error(error)
+			console.error(`Error for post "${post.shortcode}":`)
+
+			if (error instanceof ClientResponseError) {
+				if (error.status === 400) {
+					console.warn('Bad request:')
+					console.error(JSON.stringify(error.originalError, null, 2))
+				} else {
+					console.error(JSON.stringify(error.toJSON(), null, 2))
+				}
+			} else {
+				console.error(error)
+			}
 		}
 	}
 
