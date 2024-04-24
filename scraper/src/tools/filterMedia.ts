@@ -1,4 +1,4 @@
-import { getPocketbase } from './helpers/config'
+import { getPocketbase } from '../helpers/config'
 
 if (import.meta.main) {
 	const pb = getPocketbase()

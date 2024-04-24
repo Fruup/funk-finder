@@ -9,12 +9,14 @@ export function getPocketbase() {
 	return new Pocketbase(import.meta.env.POCKETBASE_PATH)
 }
 
-export function getChroma() {
+export async function getChroma() {
 	if (!import.meta.env.CHROMA_PATH) throw new Error('Missing environment variable CHROMA_PATH.')
 	if (!import.meta.env.OPENAI_API_KEY)
 		throw new Error('Missing environment variable OPENAI_API_KEY.')
 	if (!import.meta.env.EMBEDDING_MODEL)
 		throw new Error('Missing environment variable EMBEDDING_MODEL.')
+
+	console.log(`Accessing ChromaDB unter ${import.meta.env.CHROMA_PATH}.`)
 
 	const chroma = new ChromaClient({
 		path: import.meta.env.CHROMA_PATH,
@@ -25,12 +27,14 @@ export function getChroma() {
 		openai_model: import.meta.env.EMBEDDING_MODEL,
 	})
 
+	const mediaCollection = await chroma.getCollection({
+		name: 'media',
+		embeddingFunction,
+	})
+
 	return {
 		chroma,
 		embeddingFunction,
-		mediaCollection: chroma.getCollection({
-			name: 'media',
-			embeddingFunction,
-		}),
+		mediaCollection,
 	}
 }

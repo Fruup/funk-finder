@@ -10,6 +10,8 @@ import Pocketbase from 'pocketbase'
 import type * as Db from '@funk-finder/db/types/models'
 import OpenAI from 'openai'
 import { refineText } from './refineText'
+import { Timing } from './helpers/timing'
+import { readLine } from './helpers/readLine'
 
 const config = {
 	chromaPath: 'http://localhost:8000',
@@ -68,7 +70,11 @@ async function init() {
 		metadata: { 'hnsw:space': 'cosine' },
 	})
 
-	console.log(`💡 Database contains ${await mediaCollection.count()} item(s).`)
+	console.log(
+		`💡 Database collection "${
+			config.collectionName
+		}" contains ${await mediaCollection.count()} item(s).`,
+	)
 
 	const pb = new Pocketbase(config.pocketbasePath)
 
@@ -77,8 +83,9 @@ async function init() {
 	const metadatas: { type: 'medium' | 'post' }[] = []
 
 	// insert media
-	// TODO
-	const { items: media } = await pb.collection<Db.Medium<true>>('media').getList(1, 100)
+	const media = await pb
+		.collection<Db.Medium<true>>('media')
+		.getFullList({ filter: `text != null && processed = true` })
 
 	for (const medium of media) {
 		if (!medium.text) continue
@@ -92,8 +99,9 @@ async function init() {
 	}
 
 	// insert posts
-	// TODO
-	const { items: posts } = await pb.collection<Db.Post<true>>('posts').getList(1, 100)
+	const posts = await pb
+		.collection<Db.Post<true>>('posts')
+		.getFullList({ filter: `caption != null` })
 
 	for (const post of posts) {
 		if (!post.caption) continue
@@ -105,24 +113,45 @@ async function init() {
 		metadatas.push({ type: 'post' })
 	}
 
+	// Filter out already existing items.
+	const existingItems = await mediaCollection.get({ ids })
+	existingItems.ids.forEach((id) => {
+		if (!id) return
+		const index = ids.indexOf(id)
+		if (index < 0) return
+
+		ids.splice(index, 1)
+		documents.splice(index, 1)
+		metadatas.splice(index, 1)
+	})
+
+	// Insert the new items.
 	if (ids.length) {
 		console.log(`📥 Inserting ${ids.length} item(s)...`)
+
+		if (!(await readLine('Continue? (y/n)'))) {
+			process.exit(0)
+		}
+
+		const timing = new Timing(ids.length)
 
 		/**
 		 * Has to be done in batches because otherwise
 		 * Chroma throws (merely saying "Killed").
 		 */
-		const BATCH_SIZE = 10
+		const BATCH_SIZE = 30
 
 		for (let i = 0; i < ids.length; i += BATCH_SIZE) {
-			console.log(`💡 ${i.toString().padStart(ids.length.toString().length, ' ')}/${ids.length}`)
-
 			await mediaCollection.upsert({
 				ids: ids.slice(i, i + BATCH_SIZE),
 				documents: documents.slice(i, i + BATCH_SIZE),
 				metadatas: metadatas.slice(i, i + BATCH_SIZE),
 			})
+
+			timing.update(i)
 		}
+
+		timing.finish()
 	}
 }
 

@@ -13,7 +13,7 @@ import type { SearchResponse, SearchResponseItemType } from '$lib/types'
 
 const config = {
 	embedder: 'openai' satisfies 'openai' | 'local',
-	embeddingModel: import.meta.env.EMBEDDING_MODEL,
+	embeddingModel: env.EMBEDDING_MODEL,
 }
 
 let chroma: ChromaClient
@@ -64,6 +64,10 @@ export async function search(text: string): Promise<SearchResponse> {
 		queryTexts: [text],
 		include: [IncludeEnum.Distances, IncludeEnum.Metadatas],
 	})
+
+	if (!result.ids?.length) {
+		throw new Error('No results found')
+	}
 
 	interface Metadata {
 		type: SearchResponseItemType

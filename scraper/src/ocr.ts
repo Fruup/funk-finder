@@ -1,6 +1,6 @@
 import fs from 'fs'
 import { execSync } from 'child_process'
-import Pocketbase, { type RecordModel } from 'pocketbase'
+import Pocketbase from 'pocketbase'
 import type * as Db from '@funk-finder/db/types/models'
 
 export async function ocr(options: {
@@ -57,19 +57,8 @@ const id = () => Math.floor(0xffffffff * Math.random()).toString(16)
 if (import.meta.main) {
 	const pb = new Pocketbase(import.meta.env.POCKETBASE_PATH)
 
-	// Normalize
-	if (false) {
-		const media = await pb.collection<Db.Medium & RecordModel>('media').getFullList({
-			filter: `text = ""`,
-		})
-
-		for (const medium of media) {
-			await pb.collection<Db.Medium & RecordModel>('media').update(medium.id, { text: null })
-		}
-	}
-
-	const media = await pb.collection<Db.Medium & RecordModel>('media').getFullList({
-		filter: `text = null`,
+	const media = await pb.collection<Db.Medium<true>>('media').getFullList({
+		filter: `processed = false`,
 	})
 
 	const timing = {
@@ -112,16 +101,16 @@ if (import.meta.main) {
 			console.log(`💡 (${timing.progress()})`, `Processing "${medium.id}"...`)
 
 			const text = await ocr({ url: medium.url })
+
+			await pb.collection<Db.Medium<true>>('media').update(medium.id, { text, processed: true })
+
 			if (!text) {
-				console.log('  No text extracted. Skipping...')
-				continue
+				console.log('    -> No text extracted.')
+			} else {
+				console.log(`    -> Extracted text "${text.slice(0, 50)}..."`)
 			}
-
-			console.log(`  Extracted text "${text.slice(0, 50)}...". Updating...`)
-
-			await pb.collection<Db.Medium & RecordModel>('media').update(medium.id, { text })
 		} catch (error) {
-			console.error(error)
+			console.error('❌', error)
 		}
 
 		timing.update(i)

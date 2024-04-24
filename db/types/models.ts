@@ -16,6 +16,7 @@ export type Medium<
 	post?: string
 	// post?: Expand extends 'post' ? Post : string
 	igId?: string
+	processed?: boolean
 } & (IsModel extends true ? Model : {}) & {
 		expand: {
 			post: Expand extends 'post' ? Post : never
