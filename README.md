@@ -16,3 +16,4 @@
 - [x] Chroma DB
 - [ ] Request further images for the same request (cache query embedding)
   - ChromaDB `get` exposes paging functionality
+- [ ] Cache query embeddings in DB (Redis/PB?)
