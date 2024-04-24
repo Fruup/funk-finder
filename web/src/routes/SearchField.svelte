@@ -12,7 +12,7 @@
 </script>
 
 <label>
-	<div class="label-text">bloibla</div>
+	<div class="label-text">Nach was suchst Du?</div>
 	<input bind:value class:highlighted />
 </label>
 
@@ -22,6 +22,9 @@
 	}
 
 	input {
+		position: sticky;
+		top: 0;
+
 		font-size: 2rem;
 		border: 1px solid #ccc;
 		border-radius: 12px;
@@ -33,8 +36,8 @@
 		color: white;
 
 		&.highlighted {
-			scale: 2;
-			translate: 0 200%;
+			// scale: 2;
+			// translate: 0 200%;
 		}
 	}
 </style>

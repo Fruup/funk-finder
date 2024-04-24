@@ -74,7 +74,7 @@
 		grid-template-columns: 1fr 1fr 1fr;
 		max-width: 1000px;
 
-		margin: 2rem auto;
+		margin: 2rem 0;
 	}
 
 	li {
