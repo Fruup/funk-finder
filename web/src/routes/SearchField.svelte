@@ -13,7 +13,12 @@
 
 <label>
 	<div class="label-text">Nach was suchst Du?</div>
-	<input bind:value class:highlighted />
+	<input
+		class="sticky top-1 text-xl p-2 rounded-xl shadow-2xl border-[2px] border-fuchsia-700"
+		bind:value
+		class:highlighted
+		placeholder="Waschmaschine..."
+	/>
 </label>
 
 <style lang="scss">
@@ -22,19 +27,13 @@
 	}
 
 	input {
-		position: sticky;
-		top: 0;
-
-		font-size: 2rem;
-		border: 1px solid #ccc;
-		border-radius: 12px;
-		padding: 1rem;
-
-		transition: all 300ms ease;
-
-		background-color: var(--surface-1);
-		color: white;
-
+		width: min(100%, 20em);
+		// border: 1px solid #ccc;
+		// border-radius: 12px;
+		// padding: 1rem;
+		// transition: all 300ms ease;
+		// background-color: var(--surface-1);
+		// color: white;
 		&.highlighted {
 			// scale: 2;
 			// translate: 0 200%;

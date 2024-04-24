@@ -1,5 +1,6 @@
 <script lang="ts">
 	import '../styles/global.scss'
+	import '../app.css'
 </script>
 
 <h1>FUNK FINDER</h1>

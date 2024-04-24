@@ -36,21 +36,28 @@
 <div class="page">
 	<SearchField highlighted={items.length === 0} {search} />
 
-	<ul>
+	<ul class="m-auto max-w-screen-md grid grid-cols-3 gap-1">
 		{#each items as item, i (item.id)}
 			{@const delay = 100 * i}
 
 			<li
+				class="aspect-square"
 				animate:flip={{ delay: duration, duration: 3 * duration }}
 				in:scale={{ delay: duration + delay, start: 1.05, duration: 2 * duration }}
 				out:scale={{ duration, start: 0.9 }}
 			>
 				<a
+					class="block w-full h-full"
 					href="https://instagram.com/p/{item.shortcode}"
 					target="_blank"
 					rel="nofollow noreferrer"
 				>
-					<img src={getProxyPath(item.imageUrl)} alt={item.text} crossorigin="anonymous" />
+					<img
+						class="object-cover object-center w-full h-full"
+						src={getProxyPath(item.imageUrl)}
+						alt={item.text}
+						crossorigin="anonymous"
+					/>
 				</a>
 			</li>
 		{/each}
@@ -64,33 +71,5 @@
 <style lang="scss">
 	.page {
 		text-align: center;
-	}
-
-	ul {
-		list-style: none;
-		padding: 0;
-		display: grid;
-		gap: 4px;
-		grid-template-columns: 1fr 1fr 1fr;
-		max-width: 1000px;
-
-		margin: 2rem 0;
-	}
-
-	li {
-		width: 100%;
-		height: auto;
-		aspect-ratio: 1;
-
-		:global(*) {
-			display: block;
-			width: 100%;
-			height: 100%;
-		}
-	}
-
-	img {
-		object-fit: cover;
-		object-position: center;
 	}
 </style>
