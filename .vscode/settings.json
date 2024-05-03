@@ -9,7 +9,9 @@
 	},
 	"hide-files.files": [],
 	"cSpell.words": [
+		"bunx",
 		"chromadb",
+		"fastapi",
 		"godotenv",
 		"gosseract",
 		"hnsw",

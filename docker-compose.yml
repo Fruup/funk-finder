@@ -43,6 +43,19 @@ services:
     networks:
       - funk-finder
 
+  scraper-api:
+    build:
+      dockerfile: scraper/py/Dockerfile
+    working_dir: /work/scraper
+    ports:
+      - 3000:3000
+    expose:
+      - 3000
+    volumes:
+      - ./scraper:/work/scraper
+    networks:
+      - funk-finder
+
   chroma:
     build:
       dockerfile: chroma/Dockerfile

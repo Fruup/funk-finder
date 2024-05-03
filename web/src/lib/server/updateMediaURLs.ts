@@ -1,17 +1,133 @@
-export async function updateMediaURLs(mediaIds: string[]) {
-	const host = 'scraper.funk-finder.orb.local'
-	const response = await fetch(`http://${host}/updateMediaURLs?ids=${mediaIds.join(',')}`)
+import type { Db } from '@funk-finder/db'
+import Pocketbase from 'pocketbase'
 
-	if (!response.ok) {
-		console.warn(
-			'Update media URLs request failed:',
-			response.status,
-			response.statusText,
-			await response.json(),
-		)
+export interface UpdateMediaURLsResultItem {
+	mediumId: string
+	url: string
+	updated: boolean
+}
 
-		return []
-	} else {
-		return (await response.json()) as { mediumId: string; url: string }[]
+/**
+ * Checks if the media URLs have expired and updates the DB entries accordingly.
+ */
+export async function updateMediaURLs(
+	mediaIds: string[],
+	{ pb }: { pb: Pocketbase },
+): Promise<Promise<UpdateMediaURLsResultItem>[]> {
+	// Group media by post.
+	const queue: Record<
+		string,
+		{
+			post: Db.Post
+			media: {
+				resolve: (value: UpdateMediaURLsResultItem) => any
+				record: Db.Medium<true, 'post'>
+			}[]
+		}
+	> = {}
+
+	const promises: Promise<UpdateMediaURLsResultItem>[] = []
+
+	for (const id of mediaIds) {
+		const { promise, resolve } = Promise.withResolvers<UpdateMediaURLsResultItem>()
+
+		const medium = await pb
+			.collection<Db.Medium<true, 'post'>>('media')
+			.getOne(id, { expand: 'post' })
+
+		if (await isUrlOk(medium.url)) {
+			// URL is still valid. Safe to resolve immediately.
+			resolve({
+				mediumId: id,
+				url: medium.url,
+				updated: false,
+			})
+		} else {
+			// Add post to queue.
+			const post = medium.expand.post
+
+			if (!queue[post.shortcode]) {
+				queue[post.shortcode] = {
+					post,
+					media: [],
+				}
+			}
+
+			queue[post.shortcode].media.push({
+				record: medium,
+				resolve,
+			})
+		}
+
+		promises.push(promise)
+	}
+
+	// No need to wait for this to finish. The promises will resolve in the background.
+	Object.values(queue).map(async ({ media, post }) => {
+		const updated = await getUpdatedPost(post.shortcode)
+		if (!updated) return
+
+		const updateOne = async (updated: { igId: string; url: string }) => {
+			const medium = media.find((m) => m.record.igId === updated.igId)
+			if (!medium) return
+
+			const mediumId = medium.record.id
+			const url = updated.url
+
+			await pb.collection<Db.Medium>('media').update(mediumId, {
+				url,
+			})
+
+			medium.resolve({
+				mediumId,
+				url,
+				updated: true,
+			})
+		}
+
+		if (updated.type === 'GraphImage') {
+			return updateOne(updated)
+		} else if (updated.type === 'GraphSidecar') {
+			return updated.media.map(updateOne)
+		}
+	})
+
+	return promises
+}
+
+async function isUrlOk(url: string) {
+	try {
+		const response = await fetch(url)
+		return response.ok
+	} catch (e) {
+		console.error(e)
+		return false
+	}
+}
+
+async function getUpdatedPost(shortcode: string) {
+	try {
+		const host = `http://scraper-api.funk-finder.orb.local`
+		// http://scaper-api:3000
+		const response = await fetch(`${host}/posts/${shortcode}`)
+
+		type R =
+			| {
+					type: 'GraphSidecar'
+					igId: string
+					media: {
+						igId: string
+						url: string
+					}[]
+			  }
+			| {
+					type: 'GraphImage'
+					igId: string
+					url: string
+			  }
+
+		return (await response.json()) as R
+	} catch (e) {
+		console.error(e)
 	}
 }

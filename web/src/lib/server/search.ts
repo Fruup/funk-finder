@@ -1,67 +1,21 @@
-import {
-	ChromaClient,
-	Collection,
-	IncludeEnum,
-	OpenAIEmbeddingFunction,
-	TransformersEmbeddingFunction,
-	type IEmbeddingFunction,
-} from 'chromadb'
-import Pocketbase from 'pocketbase'
-import { env } from '$env/dynamic/private'
+import { IncludeEnum } from 'chromadb'
 import * as Db from '@funk-finder/db/types/models'
 import type { SearchResponse, SearchResponseItem, SearchResponseItemType } from '$lib/types'
-import { updateMediaURLs } from './updateMediaURLs'
+import { updateMediaURLs, type UpdateMediaURLsResultItem } from './updateMediaURLs'
+import { init } from './init'
 
-const config = {
-	embedder: 'openai' satisfies 'openai' | 'local',
-	embeddingModel: env.EMBEDDING_MODEL,
-}
-
-let chroma: ChromaClient
-let pb: Pocketbase
-let collection: Collection
-
-async function init() {
-	if (!chroma) {
-		chroma = new ChromaClient({
-			path: env.CHROMADB_PATH,
-		})
-	}
-
-	if (!collection) {
-		let embeddingFunction: IEmbeddingFunction
-
-		if (config.embedder === 'local') {
-			embeddingFunction = new TransformersEmbeddingFunction({})
-		} else if (config.embedder === 'openai') {
-			if (!env.OPENAI_API_KEY) {
-				throw new Error('OPENAI_API_KEY is required')
-			}
-
-			embeddingFunction = new OpenAIEmbeddingFunction({
-				openai_model: config.embeddingModel,
-				openai_api_key: env.OPENAI_API_KEY,
-			})
-		} else {
-			throw new Error('Invalid embedder: ' + config.embedder)
-		}
-
-		collection = await chroma.getCollection({
-			name: env.CHROMADB_COLLECTION,
-			embeddingFunction,
-		})
-	}
-
-	if (!pb) {
-		pb = new Pocketbase(env.POCKETBASE_PATH)
-	}
-}
-
+/**
+ * Searches the embeddings database for the given text.
+ * Returns the resulting items immediately (`result`).
+ * Returns an array of promises that resolve when the media URLs have been updated (`urlUpdatePromises`).
+ * This is necessary because the media URLs may have expired and need to be refreshed (damn you, instagram).
+ * This enables the UI to show a result immediately and update the results with the new URLs one after the other.
+ */
 export async function search(text: string): Promise<{
 	result: SearchResponse
-	updateMediaURLsPromises: Promise<{ mediumId: string; url: string } | undefined>[]
+	urlUpdatePromises: Promise<UpdateMediaURLsResultItem>[]
 }> {
-	await init()
+	const { collection, pb } = await init()
 
 	const result = await collection.query({
 		nResults: 15,
@@ -83,11 +37,12 @@ export async function search(text: string): Promise<{
 		}))
 		.toSorted((a, b) => a.score - b.score)
 
-	// Refresh media URLs.
-	const updateMediaURLsPromises = items.map(async ({ id }) => {
-		const result = await updateMediaURLs([id])
-		return result.at(0)
-	})
+	// Refresh the media URLs that have expired.
+	// TODO: what about posts?
+	const urlUpdatePromises = updateMediaURLs(
+		items.filter(({ metadata }) => metadata.type === 'medium').map(({ id }) => id),
+		{ pb },
+	)
 
 	const results = await Promise.allSettled(
 		items.map<Promise<SearchResponseItem | undefined>>(async ({ id, score, metadata }) => {
@@ -145,7 +100,7 @@ export async function search(text: string): Promise<{
 				return promise.value
 			})
 			.filter((value): value is SearchResponseItem => !!value),
-		updateMediaURLsPromises,
+		urlUpdatePromises: await urlUpdatePromises,
 	}
 }
 
