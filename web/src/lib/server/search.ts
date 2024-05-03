@@ -18,7 +18,7 @@ export async function search(text: string): Promise<{
 	const { collection, pb } = await init()
 
 	const result = await collection.query({
-		nResults: 15,
+		nResults: 21,
 		queryTexts: [text],
 		include: [IncludeEnum.Distances, IncludeEnum.Metadatas],
 	})
@@ -69,7 +69,7 @@ export async function search(text: string): Promise<{
 				if (!post.caption) return
 
 				const medium = await pb
-					.collection<Db.Medium>('media')
+					.collection<Db.Medium<true>>('media')
 					.getFirstListItem(`post = "${post.id}"`, { sort: 'created' })
 
 				if (!medium) {
@@ -89,17 +89,19 @@ export async function search(text: string): Promise<{
 		}),
 	)
 
-	return {
-		result: results
-			.map((promise) => {
-				if (promise.status === 'rejected') {
-					console.error(promise.reason)
-					return
-				}
+	const responseItems = results
+		.map((promise) => {
+			if (promise.status === 'rejected') {
+				console.error(promise.reason)
+				return
+			}
 
-				return promise.value
-			})
-			.filter((value): value is SearchResponseItem => !!value),
+			return promise.value
+		})
+		.filter((value): value is SearchResponseItem => !!value)
+
+	return {
+		result: responseItems,
 		urlUpdatePromises: await urlUpdatePromises,
 	}
 }

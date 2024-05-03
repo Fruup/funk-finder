@@ -15,8 +15,13 @@ export interface API {
 const api = {
 	async search(text) {
 		const { promise, resolve } = Promise.withResolvers<Readable<SearchResponse>>()
-		const response = writable<SearchResponse>()
 		let deferred: Function[] = []
+		const response = writable<SearchResponse>(undefined, () => {
+			return () => {
+				// Close the connection.
+				connection.close()
+			}
+		})
 
 		const connection = source(`/api/v1/search`, {
 			close() {
@@ -34,7 +39,7 @@ const api = {
 				.select('result')
 				.json<SearchResponse>()
 				.subscribe((value) => {
-					console.log('Received search result:', value)
+					// console.log('Received search result:', value)
 
 					if (value) {
 						response.set(value)
@@ -50,7 +55,7 @@ const api = {
 				.select('update')
 				.json<{ mediumId: string; imageUrl: string }>()
 				.subscribe((value) => {
-					console.log('Received media URL update:', value)
+					// console.log('Received media URL update:', value)
 
 					if (!value) {
 						console.warn("Failed to update media URL. The server didn't send the expected data.")

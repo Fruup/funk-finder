@@ -7,6 +7,7 @@
 	import DebugContainer from './DebugContainer.svelte'
 	import { onMount } from 'svelte'
 	import Image from './Image.svelte'
+	import Drawer from '$lib/ui/Drawer.svelte'
 
 	let loading = false
 	let items: SearchResponseItem[] = []
@@ -43,10 +44,18 @@
 	})
 </script>
 
+<!-- <Drawer>
+	<p>
+		Lorem ipsum dolor sit amet consectetur adipisicing elit. Consectetur, aut? Laboriosam, non
+		sapiente debitis corrupti molestiae magnam quo! Deleniti magni ratione ipsam consectetur, nobis
+		nesciunt incidunt saepe facere expedita quidem.
+	</p>
+</Drawer> -->
+
 <div class="page">
 	<SearchField highlighted={items.length === 0} {search} />
 
-	<ul class="m-auto max-w-screen-md grid grid-cols-3 gap-1">
+	<ul class="m-auto max-w-screen-md grid grid-cols-3 gap-[1px]">
 		{#each items as item, i (item.id)}
 			{@const delay = 100 * i}
 
@@ -71,7 +80,7 @@
 
 <p>💡 Haven't found what you are looking for? Specify your query further to narrow it down!</p>
 
-<!-- <DebugContainer>{foo}</DebugContainer> -->
+<!-- <DebugContainer>{JSON.stringify(items, null, 2)}</DebugContainer> -->
 
 <style lang="scss">
 	.page {
