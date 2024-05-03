@@ -18,3 +18,7 @@
   - ChromaDB `get` exposes paging functionality
 - [ ] Cache query embeddings in DB (Redis/PB?)
 - [ ] Info page
+
+## Build Docker images
+
+`docker build --target prod --file ./web/Dockerfile -t fruup/funk-finder:web .`
