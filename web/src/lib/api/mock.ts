@@ -1,4 +1,5 @@
 import type { SearchResponseItem } from '$lib/types'
+import { writable } from 'svelte/store'
 import type { API } from '.'
 
 const mockData: SearchResponseItem[] = Array.from({ length: 10 }, (_, i) => ({
@@ -23,6 +24,22 @@ export const mockApi: API = {
 			item.score = Math.random()
 		})
 
-		return arr
+		arr.slice(0, 3).forEach((item) => {
+			item.imageUrl = '<nope>' + item.imageUrl
+		})
+
+		const store = writable<SearchResponseItem[]>(arr)
+
+		setTimeout(() => {
+			store.update((items) => {
+				items.forEach((item) => {
+					item.imageUrl = item.imageUrl.replace('<nope>', '')
+				})
+
+				return items
+			})
+		}, 2000)
+
+		return store
 	},
 }

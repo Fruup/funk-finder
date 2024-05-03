@@ -19,7 +19,7 @@ export type Medium<
 	processed?: boolean
 } & (IsModel extends true ? Model : {}) & {
 		expand: {
-			post: Expand extends 'post' ? Post : never
+			post: Expand extends 'post' ? Post<IsModel> : never
 		}
 	}
 

@@ -5,11 +5,14 @@
 	import SearchField from './SearchField.svelte'
 	import { scale } from 'svelte/transition'
 	import DebugContainer from './DebugContainer.svelte'
+	import { onMount } from 'svelte'
+	import Image from './Image.svelte'
 
 	let loading = false
 	let items: SearchResponseItem[] = []
 
 	const duration = 150
+	let unsubscribe: () => void
 
 	const search = async (text: string) => {
 		if (text.length < 3) return
@@ -17,7 +20,13 @@
 		loading = true
 
 		try {
-			items = await api.search(text)
+			unsubscribe?.()
+
+			const store = await api.search(text)
+
+			unsubscribe = store.subscribe((value) => {
+				items = value
+			})
 		} catch (e) {
 			console.error(e)
 
@@ -27,10 +36,11 @@
 		loading = false
 	}
 
-	const getProxyPath = (path: string) => {
-		const params = new URLSearchParams({ q: path })
-		return `/api/v1/proxy?${params}`
-	}
+	onMount(() => {
+		return () => {
+			unsubscribe?.()
+		}
+	})
 </script>
 
 <div class="page">
@@ -52,12 +62,7 @@
 					target="_blank"
 					rel="nofollow noreferrer"
 				>
-					<img
-						class="object-cover object-center w-full h-full"
-						src={getProxyPath(item.imageUrl)}
-						alt={item.text}
-						crossorigin="anonymous"
-					/>
+					<Image {item} />
 				</a>
 			</li>
 		{/each}

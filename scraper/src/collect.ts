@@ -4,6 +4,7 @@ import { join } from 'node:path'
 import { isImageNode, isSidecarNode, type Metadata, type Post } from './types'
 import Pocketbase, { ClientResponseError, type RecordModel } from 'pocketbase'
 import type * as Db from '@funk-finder/db/types/models'
+import { toArray } from './helpers/misc'
 
 const production = process.env.NODE_ENV === 'production'
 
@@ -15,7 +16,18 @@ const config = {
 	tempDir: '.tmp',
 }
 
-async function loadPosts() {
+export async function loadPosts(target: { posts?: string | string[]; profile?: string }) {
+	let targetArgument = ''
+	if (target.posts) {
+		targetArgument = toArray(target.posts)
+			.map((id) => `-${id}`)
+			.join(' ')
+	} else if (target.profile) {
+		targetArgument = target.profile
+	} else {
+		throw new Error('No target specified.')
+	}
+
 	execSync(
 		`
     instaloader \
@@ -26,7 +38,8 @@ async function loadPosts() {
 			--sessionfile ./state/session \
       --latest-stamps ./state/timestamps.ini \
 			--login leonmaj7 \
-      ${config.target}
+			-- \
+      ${targetArgument}
   `,
 		{ stdio: 'inherit' },
 	)
@@ -46,9 +59,9 @@ export const readTimeStamp = (filename: string): number | null => {
 	return Date.UTC(year, month - 1, date, hour, minute, second)
 }
 
-async function collect() {
+export async function collect(target: string) {
 	const posts: Post[] = []
-	const dir = fs.readdirSync(config.target, { recursive: false, withFileTypes: true })
+	const dir = fs.readdirSync(target, { recursive: false, withFileTypes: true })
 
 	for (const entry of dir) {
 		if (!entry.isFile()) continue
@@ -56,11 +69,11 @@ async function collect() {
 
 		console.info(`Processing "${entry.name.replaceAll(/\s+/g, ' ')}"...`)
 
-		const caption = await Bun.file(join(config.target, entry.name.slice(0, -5) + '.txt'))
+		const caption = await Bun.file(join(target, entry.name.slice(0, -5) + '.txt'))
 			.text()
 			.catch(() => '')
 
-		const metadata: Metadata | null = await Bun.file(join(config.target, entry.name))
+		const metadata: Metadata | null = await Bun.file(join(target, entry.name))
 			.json()
 			.catch((error) => {
 				console.error(error)
@@ -145,10 +158,10 @@ async function main() {
 		// await writeTimestampsFile()
 
 		// Load new posts from Instagram.
-		// await loadPosts()
+		// await loadPosts({ profile: config.target })
 
 		// Collect metadata from the downloaded posts.
-		posts = await collect()
+		posts = await collect(config.target)
 
 		// if (!production) {
 		// 	Bun.write('./logs/posts.json', JSON.stringify(posts, null, 2), { createPath: true })

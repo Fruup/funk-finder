@@ -6,7 +6,10 @@ export function getPocketbase() {
 		throw new Error('Missing environment variable POCKETBASE_PATH.')
 	}
 
-	return new Pocketbase(import.meta.env.POCKETBASE_PATH)
+	const pb = new Pocketbase(import.meta.env.POCKETBASE_PATH)
+	pb.autoCancellation(false)
+
+	return pb
 }
 
 export async function getChroma() {

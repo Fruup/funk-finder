@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "vite dev --host",
+    "dev": "vite dev --host --force",
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -28,6 +28,8 @@
   "dependencies": {
     "chromadb": "^1.8.1",
     "openai": "^4.38.2",
-    "pocketbase": "^0.21.1"
+    "pocketbase": "^0.21.1",
+    "sveltekit-sse": "^0.12.2",
+    "vaul-svelte": "^0.3.0"
   }
 }

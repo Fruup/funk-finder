@@ -33,6 +33,10 @@ services:
       dockerfile: scraper/Dockerfile
       target: dev
     working_dir: /work/scraper
+    ports:
+      - 3000:3000
+    expose:
+      - 3000
     volumes:
       - ./scraper:/work/scraper
       - ./db:/work/db:ro
