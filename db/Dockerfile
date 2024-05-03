@@ -20,3 +20,5 @@ EXPOSE 8080
 
 # start PocketBase
 CMD ["/pb/pocketbase", "serve", "--http=0.0.0.0:8080"]
+
+ADD db/pb/pb_data/backups/pb_backup_acme_20240503193137.zip /pb/pb_data/backups/

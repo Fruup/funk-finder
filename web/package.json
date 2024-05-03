@@ -11,7 +11,6 @@
 	},
 	"devDependencies": {
 		"@funk-finder/db": "../db",
-		"@sveltejs/adapter-auto": "^3.0.0",
 		"@sveltejs/kit": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^3.0.0",
 		"autoprefixer": "^10.4.19",
@@ -29,6 +28,7 @@
 		"chromadb": "^1.8.1",
 		"openai": "^4.38.2",
 		"pocketbase": "^0.21.1",
+		"svelte-adapter-bun": "^0.5.2",
 		"sveltekit-sse": "^0.12.2",
 		"vaul-svelte": "^0.3.0"
 	}
