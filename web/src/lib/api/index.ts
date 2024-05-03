@@ -1,7 +1,7 @@
 import type { SearchResponse } from '$lib/types'
 import { source } from 'sveltekit-sse'
 import { mockApi } from './mock'
-import { readable, writable, type Readable } from 'svelte/store'
+import { writable, type Readable } from 'svelte/store'
 
 export interface API {
 	/**
@@ -15,19 +15,17 @@ export interface API {
 const api = {
 	async search(text) {
 		const { promise, resolve } = Promise.withResolvers<Readable<SearchResponse>>()
-
-		const query = new URLSearchParams({ q: text })
 		const response = writable<SearchResponse>()
-
 		let deferred: Function[] = []
 
-		const connection = source(`/api/v1/search?${query}`, {
+		const connection = source(`/api/v1/search`, {
 			close() {
 				// Unsubscribe all.
 				deferred.forEach((resolve) => resolve())
 			},
 			options: {
-				method: 'GET',
+				method: 'POST',
+				body: text,
 			},
 		})
 
@@ -60,6 +58,11 @@ const api = {
 					}
 
 					const { mediumId, imageUrl } = value
+
+					if (!imageUrl) {
+						console.warn('Received an empty URL for the medium with ID:', mediumId)
+						return
+					}
 
 					// Update the URL of the medium with the given ID.
 					response.update((current) =>

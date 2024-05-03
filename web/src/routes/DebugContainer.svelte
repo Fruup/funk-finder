@@ -2,7 +2,7 @@
 
 <style>
 	pre {
-		display: none;
+		/* display: none; */
 
 		background: #f4f4f4;
 		padding: 1rem;

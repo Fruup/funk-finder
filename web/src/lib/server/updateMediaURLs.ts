@@ -65,9 +65,19 @@ export async function updateMediaURLs(
 	// No need to wait for this to finish. The promises will resolve in the background.
 	Object.values(queue).map(async ({ media, post }) => {
 		const updated = await getUpdatedPost(post.shortcode)
-		if (!updated) return
+		if (!updated) {
+			media.forEach((medium) =>
+				medium.resolve({
+					mediumId: medium.record.id,
+					url: medium.record.url,
+					updated: false,
+				}),
+			)
 
-		const updateOne = async (updated: { igId: string; url: string }) => {
+			return
+		}
+
+		return updated.media.map(async (updated) => {
 			const medium = media.find((m) => m.record.igId === updated.igId)
 			if (!medium) return
 
@@ -83,13 +93,7 @@ export async function updateMediaURLs(
 				url,
 				updated: true,
 			})
-		}
-
-		if (updated.type === 'GraphImage') {
-			return updateOne(updated)
-		} else if (updated.type === 'GraphSidecar') {
-			return updated.media.map(updateOne)
-		}
+		})
 	})
 
 	return promises
@@ -111,22 +115,22 @@ async function getUpdatedPost(shortcode: string) {
 		// http://scaper-api:3000
 		const response = await fetch(`${host}/posts/${shortcode}`)
 
-		type R =
-			| {
-					type: 'GraphSidecar'
-					igId: string
-					media: {
-						igId: string
-						url: string
-					}[]
-			  }
-			| {
-					type: 'GraphImage'
-					igId: string
-					url: string
-			  }
+		type R = {
+			type: 'GraphImage' | 'GraphSidecar'
+			igId: string
+			media: {
+				igId: string
+				url: string
+			}[]
+		}
 
-		return (await response.json()) as R
+		const text = await response.text()
+
+		try {
+			return JSON.parse(text) as R
+		} catch (e) {
+			console.error('Failed to parse JSON:', text)
+		}
 	} catch (e) {
 		console.error(e)
 	}

@@ -54,7 +54,7 @@
 			$list: list.append($list, $color, $separator: comma);
 		}
 
-		background: radial-gradient(closest-corner, $list);
+		background: radial-gradient(circle at center, $list);
 	}
 
 	img {
@@ -84,6 +84,6 @@
 		place-content: center;
 		font-size: 1.5rem;
 
-		@include gradient($c0: transparent, $c1: color.change(white, $alpha: 0.1));
+		@include gradient($c0: transparent, $c1: color.change(white, $alpha: 0.2));
 	}
 </style>

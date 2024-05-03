@@ -7,7 +7,7 @@ export const POST: RequestHandler = async ({ url, request }) =>
 	events({
 		request,
 		async start({ emit, lock }) {
-			const text = url.searchParams.get('q')
+			const text = await request.text()
 			if (!text) {
 				lock.set(false)
 				console.error("Missing 'q' parameter in the query string.")
