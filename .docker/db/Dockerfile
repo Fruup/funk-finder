@@ -1,13 +1,15 @@
 FROM alpine:latest
 
-ARG PB_VERSION=0.22.9
+ARG PB_VERSION=0.22.11
+# ARG PLATFORM=linux_arm64
+ARG PLATFORM=linux_amd64
 
 RUN apk add --no-cache \
   unzip \
   ca-certificates
 
 # download and unzip PocketBase
-ADD https://github.com/pocketbase/pocketbase/releases/download/v${PB_VERSION}/pocketbase_${PB_VERSION}_linux_arm64.zip /tmp/pb.zip
+ADD https://github.com/pocketbase/pocketbase/releases/download/v${PB_VERSION}/pocketbase_${PB_VERSION}_${PLATFORM}.zip /tmp/pb.zip
 RUN unzip /tmp/pb.zip -d /pb/
 
 # uncomment to copy the local pb_migrations dir into the image
@@ -19,6 +21,6 @@ RUN unzip /tmp/pb.zip -d /pb/
 EXPOSE 8080
 
 # start PocketBase
-CMD ["/pb/pocketbase", "serve", "--http=0.0.0.0:8080"]
+CMD /pb/pocketbase serve --http=0.0.0.0:8080
 
 ADD db/pb/pb_data/backups/pb_backup_acme_20240503193137.zip /pb/pb_data/backups/
