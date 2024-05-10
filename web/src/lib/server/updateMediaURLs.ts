@@ -1,3 +1,4 @@
+import { env } from '$env/dynamic/private'
 import type { Db } from '@funk-finder/db'
 import Pocketbase from 'pocketbase'
 
@@ -111,8 +112,7 @@ async function isUrlOk(url: string) {
 
 async function getUpdatedPost(shortcode: string) {
 	try {
-		const host = `http://scraper-api.funk-finder.orb.local`
-		// http://scaper-api:3000
+		const host = env.SCRAPER_PATH
 		const response = await fetch(`${host}/posts/${shortcode}`)
 
 		type R = {

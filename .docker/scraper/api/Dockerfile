@@ -9,6 +9,12 @@ RUN pip install -r requirements.txt
 
 # Copy sources.
 ADD ./scraper/py/*.py py/
-ADD ./scraper/state state/
+# ADD ./scraper/state state/
+ADD ./scraper/state/timestamps.ini state/
+# ADD ./scraper/state/cookies.sqlite state/
 
-ENTRYPOINT fastapi run py/api.py --port 3000
+ADD ./scraper/entry.sh .
+RUN chmod +x entry.sh
+
+CMD []
+ENTRYPOINT ./entry.sh

@@ -2,9 +2,9 @@ import { type RequestHandler } from '@sveltejs/kit'
 import { search } from '$lib/server/search'
 import { events } from 'sveltekit-sse'
 
-export const POST: RequestHandler = async ({ url, request }) =>
+export const POST: RequestHandler = async ({ request }) => {
 	// No code should appear outside the `start` function.
-	events({
+	return events({
 		request,
 		async start({ emit, lock }) {
 			const text = await request.text()
@@ -15,8 +15,8 @@ export const POST: RequestHandler = async ({ url, request }) =>
 			}
 
 			const searchResult = await search(text).catch((e) => {
-				lock.set(false)
 				console.error(e)
+				lock.set(false)
 				return
 			})
 
@@ -49,3 +49,4 @@ export const POST: RequestHandler = async ({ url, request }) =>
 			lock.set(false)
 		},
 	})
+}

@@ -18,9 +18,11 @@ RUN unzip /tmp/pb.zip -d /pb/
 # uncomment to copy the local pb_hooks dir into the image
 # COPY ./pb_hooks /pb/pb_hooks
 
+ENV HOST=0.0.0.0
+
 EXPOSE 8080
 
 # start PocketBase
-CMD /pb/pocketbase serve --http=0.0.0.0:8080
+CMD /pb/pocketbase serve --http=${HOST}:8080
 
 ADD db/pb/pb_data/backups/pb_backup_acme_20240503193137.zip /pb/pb_data/backups/
