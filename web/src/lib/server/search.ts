@@ -1,7 +1,7 @@
 import { IncludeEnum } from 'chromadb'
 import * as Db from '@funk-finder/db/types/models'
 import type { SearchResponse, SearchResponseItem, SearchResponseItemType } from '$lib/types'
-import { updateMediaURLs, type UpdateMediaURLsResultItem } from './updateMediaURLs'
+import { MediaUrlUpdater, type MediaUrlUpdate } from './updateMediaURLs'
 import { init } from './init'
 
 /**
@@ -13,7 +13,7 @@ import { init } from './init'
  */
 export async function search(text: string): Promise<{
 	result: SearchResponse
-	urlUpdatePromises: Promise<UpdateMediaURLsResultItem>[]
+	urlUpdatePromises: Promise<MediaUrlUpdate | null>[]
 }> {
 	const { collection, pb } = await init()
 
@@ -38,11 +38,7 @@ export async function search(text: string): Promise<{
 		.toSorted((a, b) => a.score - b.score)
 
 	// Refresh the media URLs that have expired.
-	// TODO: what about posts?
-	const urlUpdatePromises = updateMediaURLs(
-		items.filter(({ metadata }) => metadata.type === 'medium').map(({ id }) => id),
-		{ pb },
-	)
+	const updater = new MediaUrlUpdater(pb)
 
 	const results = await Promise.allSettled(
 		items.map<Promise<SearchResponseItem | undefined>>(async ({ id, score, metadata }) => {
@@ -56,12 +52,23 @@ export async function search(text: string): Promise<{
 					return
 				}
 
+				const shortcode = medium.expand.post.shortcode
+
+				// Refresh the media URL if it has expired.
+				updater.add({
+					shortcode,
+					igId: medium.igId,
+					type: 'medium',
+					id: medium.id,
+					currentUrl: medium.url,
+				})
+
 				return {
 					type: 'medium',
 					id: medium.id,
 					text: medium.text,
 					imageUrl: medium.url,
-					shortcode: medium.expand.post.shortcode,
+					shortcode,
 					score,
 				}
 			} else if (metadata.type === 'post') {
@@ -76,6 +83,15 @@ export async function search(text: string): Promise<{
 					console.warn('Medium not found for post', post.id)
 					return
 				}
+
+				// Refresh the media URL if it has expired.
+				updater.add({
+					type: 'post',
+					id: post.id,
+					igId: medium.igId,
+					shortcode: post.shortcode,
+					currentUrl: medium.url,
+				})
 
 				return {
 					type: 'post',
@@ -102,7 +118,7 @@ export async function search(text: string): Promise<{
 
 	return {
 		result: responseItems,
-		urlUpdatePromises: await urlUpdatePromises,
+		urlUpdatePromises: await updater.dispatch(),
 	}
 }
 

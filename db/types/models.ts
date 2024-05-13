@@ -15,7 +15,7 @@ export type Medium<
 	text?: string
 	post?: string
 	// post?: Expand extends 'post' ? Post : string
-	igId?: string
+	igId: string
 	processed?: boolean
 } & (IsModel extends true ? Model : {}) & {
 		expand: {
@@ -35,7 +35,7 @@ export type Post<
 > = {
 	shortcode: string
 	caption?: string
-	igId?: string
+	igId: string
 	time?: string // ISO datetime
 } & (IsModel extends true ? Model : {})
 

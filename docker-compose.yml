@@ -17,11 +17,11 @@ services:
 
   db:
     build:
-      dockerfile: db/Dockerfile
+      dockerfile: .docker/db/Dockerfile
     ports:
       - 8080:8080
-    expose:
-      - 8080
+    # expose:
+    # - 8080
     volumes:
       - ./db/pb/pb_data:/pb/pb_data
       - ./db/pb/pb_migrations:/pb/pb_migrations
@@ -32,11 +32,11 @@ services:
     build:
       dockerfile: scraper/Dockerfile
       target: dev
-    working_dir: /work/scraper
+    # working_dir: /work/scraper
     ports:
       - 3000:3000
-    expose:
-      - 3000
+    # expose:
+    # - 3000
     volumes:
       - ./scraper:/work/scraper
       - ./db:/work/db:ro
@@ -45,8 +45,8 @@ services:
 
   scraper-api:
     build:
-      dockerfile: scraper/py/Dockerfile
-    working_dir: /work/scraper
+      dockerfile: .docker/scraper/api/Dockerfile
+      target: dev
     ports:
       - 3000:3000
     expose:
@@ -58,9 +58,7 @@ services:
 
   chroma:
     build:
-      dockerfile: chroma/Dockerfile
-      # target: dev
-    # working_dir: /work
+      dockerfile: .docker/chroma/Dockerfile
     volumes:
       - chroma-data:/chroma/chroma
     ports:

@@ -1,9 +1,13 @@
 import lib
 from fastapi import FastAPI
+from contextlib import asynccontextmanager
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+	lib.init()
+	yield
 
-lib.init()
+app = FastAPI(lifespan=lifespan)
 
 @app.get("/")
 def read_root():
