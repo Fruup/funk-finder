@@ -91,8 +91,6 @@ async function getUpdatedPost(shortcode: string): Promise<
 
 		const text = await response.text()
 
-		// TODO: update db entries
-
 		try {
 			return JSON.parse(text)
 		} catch (e) {
@@ -104,8 +102,14 @@ async function getUpdatedPost(shortcode: string): Promise<
 }
 
 async function updateMediumUrl(igId: string, url: string, pb: Pocketbase) {
-	const medium = await pb.collection<Db.Medium<true>>('media').getFirstListItem(`igId = "${igId}"`)
-	if (!medium) return
+	try {
+		const medium = await pb
+			.collection<Db.Medium<true>>('media')
+			.getFirstListItem(`igId = "${igId}"`)
+		if (!medium) return
 
-	await pb.collection<Db.Medium<true>>('media').update(medium.id, { url })
+		await pb.collection<Db.Medium<true>>('media').update(medium.id, { url })
+	} catch (e) {
+		console.error(e)
+	}
 }

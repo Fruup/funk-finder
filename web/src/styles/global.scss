@@ -1,16 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Freeman&display=swap');
+
 :root {
 	--surface-0: #1f1f1f;
-	--surface-1: #3f3f3f;
+	--surface-1: #3c3c3c;
 
-	--text-0: #f1f1f1;
-	--text-1: #c1c1c1;
+	--text-0: #fafafa;
+	--text-1: #cbcbcb;
+
+	--color-accent-1: rgb(203, 0, 255);
+	--color-accent-2: rgb(255, 128, 0);
 }
 
 :root {
-	font-family: Verdana, Geneva, Tahoma, sans-serif;
+	font-family: 'Freeman', sans-serif;
+	font-weight: 400;
+	font-style: normal;
+	// font-family: Verdana, Geneva, Tahoma, sans-serif;
 	font-size: 21px;
 	background-color: var(--surface-0);
 	color: var(--text-0);
+}
+
+:root,
+body {
+	overflow-x: hidden;
 }
 
 * {

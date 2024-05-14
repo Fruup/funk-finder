@@ -55,4 +55,10 @@ export class AsyncQueue extends Queue {
 
 		return true
 	}
+
+	async wait() {
+		while (this.size > 0) {
+			await this.dequeue()
+		}
+	}
 }

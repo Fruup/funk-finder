@@ -4,7 +4,7 @@ services:
   web:
     build:
       dockerfile_inline: |
-        FROM oven/bun:slim
+        FROM oven/bun:latest
     entrypoint: bash -c "bun i; bun dev"
     working_dir: /work/web
     ports:
@@ -12,6 +12,7 @@ services:
     volumes:
       - ./web:/work/web
       - ./db:/work/db:ro
+      - ./scraper:/work/scraper:ro
     networks:
       - funk-finder
 
@@ -20,28 +21,26 @@ services:
       dockerfile: .docker/db/Dockerfile
     ports:
       - 8080:8080
-    # expose:
-    # - 8080
     volumes:
       - ./db/pb/pb_data:/pb/pb_data
       - ./db/pb/pb_migrations:/pb/pb_migrations
     networks:
       - funk-finder
 
-  scraper:
-    build:
-      dockerfile: scraper/Dockerfile
-      target: dev
-    # working_dir: /work/scraper
-    ports:
-      - 3000:3000
-    # expose:
-    # - 3000
-    volumes:
-      - ./scraper:/work/scraper
-      - ./db:/work/db:ro
-    networks:
-      - funk-finder
+  # scraper:
+  #   build:
+  #     dockerfile: scraper/Dockerfile
+  #     target: dev
+  #   # working_dir: /work/scraper
+  #   ports:
+  #     - 3000:3000
+  #   # expose:
+  #   # - 3000
+  #   volumes:
+  #     - ./scraper:/work/scraper
+  #     - ./db:/work/db:ro
+  #   networks:
+  #     - funk-finder
 
   scraper-api:
     build:
@@ -49,8 +48,6 @@ services:
       target: dev
     ports:
       - 3000:3000
-    expose:
-      - 3000
     volumes:
       - ./scraper:/work/scraper
     networks:

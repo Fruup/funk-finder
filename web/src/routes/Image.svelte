@@ -20,7 +20,7 @@
 	{/if}
 
 	<img
-		class="object-cover object-center w-full h-full"
+		class="object-cover object-top w-full h-full"
 		src={getProxyPath(item.imageUrl)}
 		alt={item.text}
 		crossorigin="anonymous"
@@ -66,7 +66,7 @@
 		width: 100%;
 		height: 100%;
 
-		background-color: #1f1f1f;
+		background-color: var(--surface-1);
 
 		&.loading {
 			img {

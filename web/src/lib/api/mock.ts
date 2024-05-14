@@ -1,8 +1,8 @@
-import type { SearchResponseItem } from '$lib/types'
-import { writable } from 'svelte/store'
+import type { SearchResponse, SearchResponseItem } from '$lib/types'
+import { writable, type Writable } from 'svelte/store'
 import type { API } from '.'
 
-const mockData: SearchResponseItem[] = Array.from({ length: 10 }, (_, i) => ({
+const mockData: SearchResponseItem[] = Array.from({ length: 12 }, (_, i) => ({
 	id: i.toString(),
 	type: 'medium',
 	text: `Post ${i}`,
@@ -13,8 +13,10 @@ const mockData: SearchResponseItem[] = Array.from({ length: 10 }, (_, i) => ({
 
 export const mockApi: API = {
 	async search(text) {
+		const { promise, resolve } = Promise.withResolvers<Writable<SearchResponse>>()
+
 		const arr = [...mockData]
-		const N = 5
+		const N = 12
 
 		while (arr.length > N) {
 			arr.splice(Math.floor(Math.random() * arr.length), 1)
@@ -31,15 +33,19 @@ export const mockApi: API = {
 		const store = writable<SearchResponseItem[]>(arr)
 
 		setTimeout(() => {
-			store.update((items) => {
-				items.forEach((item) => {
-					item.imageUrl = item.imageUrl.replace('<nope>', '')
-				})
+			resolve(store)
 
-				return items
-			})
+			setTimeout(() => {
+				store.update((items) => {
+					items.forEach((item) => {
+						item.imageUrl = item.imageUrl.replace('<nope>', '')
+					})
+
+					return items
+				})
+			}, 2000)
 		}, 2000)
 
-		return store
+		return promise
 	},
 }

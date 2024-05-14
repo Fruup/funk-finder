@@ -1,15 +1,13 @@
-<span class="loader"></span>
+<span role="figure" title="Loading spinner" class="loader"></span>
 
 <style>
 	.loader {
+		display: inline-block;
 		width: 1em;
 		height: 1em;
 		border-radius: 50%;
 		position: relative;
 		animation: rotate 1s linear infinite;
-		/* animation-fill-mode: both;
-		animation-iteration-count: infinite;
-		animation-direction: alternate; */
 	}
 
 	.loader::before {
@@ -19,10 +17,9 @@
 		inset: 0px;
 		border-radius: 50%;
 		border: 0.1em solid #fff;
-		animation: prixClipFix 2s ease infinite;
+		animation: prixClipFix 2s linear infinite;
 		animation-fill-mode: both;
 		animation-iteration-count: infinite;
-		animation-direction: alternate;
 	}
 
 	@keyframes rotate {

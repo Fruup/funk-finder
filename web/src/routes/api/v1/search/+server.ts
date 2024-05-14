@@ -21,7 +21,10 @@ export const POST: RequestHandler = async ({ request }) => {
 				// First send the search result.
 				emit('result', JSON.stringify(result satisfies SearchEvents['result']))
 
-				// Ensure that only on `emit` is running at a time.
+				/**
+				 * Ensure that only one `emit` is running at a time.
+				 * Otherwise, they might be swallowed.
+				 */
 				const queue = new AsyncQueue()
 
 				const asyncUpdate = (update: MediaUrlUpdate) =>
@@ -31,8 +34,10 @@ export const POST: RequestHandler = async ({ request }) => {
 						else resolve(result.value)
 					})
 
-				// Then send the updated media URLs.
-				// Update one after another (stream-like).
+				/**
+				 * Then send the updated media URLs.
+				 * Update one after another (stream-like).
+				 */
 				await Promise.all(
 					urlUpdatePromises.map(async (promise) => {
 						if (stopped) return

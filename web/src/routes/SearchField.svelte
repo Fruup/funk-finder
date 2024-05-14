@@ -1,117 +1,87 @@
 <script lang="ts">
+	import { type } from '$lib/ui/animations/type'
 	import { createDebounce } from '$lib/utils'
-	import type { Action } from 'svelte/action'
 	import { fade } from 'svelte/transition'
+	import Loader from './Loader.svelte'
 
 	export let search: (text: string) => any
-	export let highlighted: boolean = true
+	export let loading = false
 
 	let value = ''
 
 	const debouncedSearch = createDebounce(500, search)
 
-	$: debouncedSearch(value)
+	$: trimmed = value.trim()
+	$: debouncedSearch(trimmed)
 
 	const placeholders = [
 		'Wie wasche ich richtig?',
+		'Welcher Waschgang?',
 		'Wahl in den USA...',
 		'Wie funktioniert ein Kühlschrank?',
 		'Schnell Geld verdienen...',
+		'Gesunde Ernährung...',
+		'Home-Workouts...',
+		'Nachhaltiges Reisen...',
+		'Aktuelle Entwicklungen in der Raumfahrt...',
+		'Methoden zur Stressbewältigung...',
+		'Gärtnern auf dem Balkon...',
+		'Wie repariere ich mein Fahrrad?',
+		'Erfolgreiches Vorstellungsgespräch...',
+		'Umweltfreundlich im Alltag...',
+		'Neue Techniktrends...',
 	]
-
-	const placeholder = placeholders[Math.floor(Math.random() * placeholders.length)]
-
-	const type: Action<HTMLElement, { strings: string[] }> = (node, options) => {
-		let currentIndex = 0
-		let string = options.strings[currentIndex]
-		let i = 0
-		let interval: ReturnType<typeof setInterval>
-
-		const next = () => {
-			currentIndex = (currentIndex + 1) % options.strings.length
-			string = options.strings[currentIndex]
-			i = 0
-		}
-
-		const clear = () => {
-			interval = setInterval(() => {
-				if (node.innerText.length > 0) {
-					node.innerText = node.innerText.slice(0, -1)
-				} else {
-					clearInterval(interval)
-					next()
-					start()
-				}
-			}, 50)
-		}
-
-		const start = () => {
-			node.innerText = ''
-
-			interval = setInterval(() => {
-				if (i >= string.length) {
-					clearInterval(interval)
-					setTimeout(() => {
-						clear()
-					}, 5000)
-					return
-				}
-
-				node.innerText += string[i]
-				i++
-			}, 100)
-		}
-
-		start()
-
-		return {
-			destroy() {
-				clearInterval(interval)
-			},
-		}
-	}
 </script>
 
-<label>
-	<!-- <div class="label-text">Nach was suchst Du?</div> -->
-
-	<div class="mx-1 mb-8 sticky top-1 z-50">
-		<!-- {#if !value}
-			<div out:fade={{ duration: 200 }} class="placeholder absolute inset-y-0">
-				<span use:type={{ strings: placeholders }}></span><span class="cursor">|</span>
+<div class="mx-3 mb-8 top-1 z-50 text-center">
+	<div class="relative w-[min(100%,20rem)] m-auto">
+		{#if !value}
+			<div
+				transition:fade={{ duration: 200 }}
+				class="placeholder px-4 py-2 absolute inset-0 grid items-center justify-start pointer-events-none opacity-90"
+			>
+				<div
+					class="h-fit w-fit max-w-full overflow-hidden whitespace-nowrap overflow-ellipsis inline-flex items-center"
+				>
+					<span class="whitespace-pre" use:type={{ strings: placeholders, delay: 200 }}></span><span
+						class="cursor">|</span
+					>
+				</div>
 			</div>
-		{/if} -->
+		{/if}
+
+		{#if loading}
+			<div
+				class="absolute inset-0 right-4 grid items-center justify-end text-xs z-50 pointer-events-none"
+			>
+				<Loader />
+			</div>
+		{/if}
 
 		<input
-			class="text-xl px-4 py-2 rounded-xl shadow-2xl border-[2px] border-fuchsia-700"
+			id="search-field"
+			class="w-full text-xl px-4 py-2 rounded-xl shadow-2xl pointer-events-auto"
 			bind:value
-			class:highlighted
-			{placeholder}
 		/>
 	</div>
-</label>
+</div>
 
 <style lang="scss">
-	.label-text {
-		margin-bottom: 0.25rem;
-	}
-
 	input {
-		position: -webkit-sticky;
-
 		font-size: 1rem;
 		width: min(100%, 20em);
 
-		$c0: rgb(203, 0, 255);
-		$c1: rgb(255, 128, 0);
-		// $c1: rgba(255, 177, 46, 1);
-
-		border: 2px solid white;
-
-		background: $c0;
-		background: linear-gradient(24deg, $c0 0%, $c1 60%, $c1 71%, $c0 100%);
-
+		outline: 2px solid var(--color-accent-2);
+		background: linear-gradient(
+			24deg,
+			var(--color-accent-1) 0%,
+			var(--color-accent-2) 60%,
+			var(--color-accent-2) 71%,
+			var(--color-accent-1) 100%
+		);
 		color: white !important;
+
+		box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.5);
 
 		transition: scale 500ms ease;
 
@@ -120,15 +90,12 @@
 		}
 	}
 
-	.placeholder {
-		pointer-events: none;
-		opacity: 0.7;
-	}
-
 	.cursor {
+		display: inline-block;
 		animation: blink 1s infinite;
+		margin-left: 2px;
 		width: 2px;
-		height: 1lh;
+		height: 1em;
 		color: transparent;
 		background: white;
 	}
