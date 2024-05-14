@@ -3,6 +3,7 @@
 	import '../app.css'
 	import { blur } from 'svelte/transition'
 	import backgroundImageUrl from '../assets/image.png?lossless&format=webp&imagetools'
+	import Footer from './Footer.svelte'
 
 	const css = `
 		:root {
@@ -42,7 +43,11 @@
 	</p>
 </header>
 
-<slot />
+<main class="min-h-[55vh]">
+	<slot />
+</main>
+
+<Footer />
 
 <style lang="scss">
 	@use 'sass:list';

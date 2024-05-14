@@ -20,6 +20,7 @@
 	font-size: 21px;
 	background-color: var(--surface-0);
 	color: var(--text-0);
+	scroll-behavior: smooth;
 }
 
 :root,
@@ -34,4 +35,8 @@ body {
 
 .gradient-text {
 	@include gradient-text;
+}
+
+.text-1 {
+	color: var(--text-1);
 }

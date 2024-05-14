@@ -26,6 +26,26 @@
 			zu durchsuchen.
 		</p>
 
+		<h2>Verwendete Ressourcen</h2>
+		<ul>
+			<li>
+				<a
+					class="gradient-text"
+					href="https://trianglify.io/p/w:1440!h:900!x:cb00ff.ff8000!v:1!c:0.05!s:yefans!f:sh!i:0.16"
+					target="_blank"
+					rel="noreferrer nofollow">Hintergrundbild</a
+				>
+			</li>
+			<li>
+				<a
+					class="gradient-text"
+					href="https://fonts.google.com/specimen/Freeman"
+					target="_blank"
+					rel="noreferrer nofollow">Font</a
+				>
+			</li>
+		</ul>
+
 		<h2>Impressum</h2>
 		<p>TODO</p>
 	</div>
@@ -37,7 +57,8 @@
 		@apply mb-1;
 	}
 
-	p {
+	p,
+	ul {
 		@apply text-sm;
 		@apply mb-8;
 
