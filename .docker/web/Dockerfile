@@ -9,7 +9,7 @@ ADD web/bun.lockb ./
 ADD db/package.json ../db/
 
 # RUN pnpm install
-RUN bun install
+RUN bun install --no-save
 
 # Copy sources.
 ADD web/src ./src
@@ -22,6 +22,8 @@ ADD web/tsconfig.json ./
 
 ADD db/index.ts ../db/
 ADD db/types ../db/types
+
+ADD scraper/src/helpers ../scraper/src/helpers
 
 # Build.
 RUN bun run build
@@ -38,7 +40,10 @@ COPY --from=builder /work/web/build .
 # Copy the package.json and install production dependencies.
 COPY --from=builder /work/web/package.json .
 COPY --from=builder /work/web/bun.lockb .
-RUN bun install --production
 
+RUN bun install --production
+# Workaround???
+RUN bun add --production --no-save set-cookie-parser cookie devalue @microsoft/fetch-event-source
+
+ENV ORIGIN=https://web-production-ecd0.up.railway.app
 ENTRYPOINT bun run .
-# ENTRYPOINT ORIGIN=https://web-production-ecd0.up.railway.app bun run .

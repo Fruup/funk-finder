@@ -30,6 +30,7 @@
 		'Erfolgreiches Vorstellungsgespräch...',
 		'Umweltfreundlich im Alltag...',
 		'Neue Techniktrends...',
+		'Wie trenne ich richtig Müll?',
 	]
 </script>
 

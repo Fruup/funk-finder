@@ -14,6 +14,12 @@
 			</li>
 
 			<li>
+				<a href="https://github.com/Fruup/funk-finder" target="_blank" rel="noreferrer nofollow"
+					><span class="gradient-text">Code</span>-Repository</a
+				>
+			</li>
+
+			<li>
 				<a href="https://leonscherer.com" target="_blank">
 					Entwickelt von
 					<span class="gradient-text">@leon</span>
