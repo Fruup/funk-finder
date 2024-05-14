@@ -59,6 +59,7 @@
 		{/if}
 
 		<input
+			autocomplete="off"
 			id="search-field"
 			class="w-full text-xl px-4 py-2 rounded-xl shadow-2xl pointer-events-auto"
 			bind:value

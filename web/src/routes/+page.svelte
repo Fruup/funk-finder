@@ -96,12 +96,12 @@
 			<Loader />
 		</div>
 	{:else if items.length === 0}
-		<div in:blur={{ delay: 200 }} out:blur={{ duration: 200 }}>
+		<!-- <div in:blur={{ delay: 200 }} out:blur={{ duration: 200 }}>
 			<Box onClick={focus}>
 				<span slot="icon">✏️</span>
 				Gib eine Suchanfrage mit &gt;2 Zeichen ein!
 			</Box>
-		</div>
+		</div> -->
 	{/if}
 </div>
 
@@ -114,8 +114,6 @@
 		<p slot="content">Verfeinere Deine Suche, um bessere Ergebnisse zu erhalten!</p>
 	</Box>
 {/if}
-
-<!-- <p>💡 Haven't found what you are looking for? Specify your query further to narrow it down!</p> -->
 
 <!-- <DebugContainer>{JSON.stringify(items, null, 2)}</DebugContainer> -->
 

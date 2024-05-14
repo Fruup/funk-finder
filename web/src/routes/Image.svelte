@@ -33,29 +33,7 @@
 	@use 'sass:list';
 	@use 'sass:math';
 	@use 'sass:color';
-
-	@function easeInOutCubic($x) {
-		@if $x < 0.5 {
-			@return calc(4 * $x * $x * $x);
-		}
-		@if $x >= 0.5 {
-			@return calc(1 - math.pow(-2 * $x + 2, 3) / 2);
-		}
-	}
-
-	@mixin gradient($c0, $c1, $n: 5) {
-		$list: ();
-
-		@for $i from 0 through $n {
-			$t: calc($i / $n);
-			// $p: calc(100% * math.pow(math.$e, -10 * $t * $t));
-			$p: calc(100% * easeInOutCubic($t));
-			$color: color.mix($c0, $c1, $p) $p;
-			$list: list.append($list, $color, $separator: comma);
-		}
-
-		background: radial-gradient(circle at center, $list);
-	}
+	@import '../styles/vars.scss';
 
 	img {
 		transition: all 200ms ease;
@@ -84,6 +62,9 @@
 		place-content: center;
 		font-size: 1.5rem;
 
-		@include gradient($c0: transparent, $c1: color.change(white, $alpha: 0.2));
+		background-image: radial-gradient(
+			circle at center,
+			gradient($c0: transparent, $c1: color.change(white, $alpha: 0.2))
+		);
 	}
 </style>

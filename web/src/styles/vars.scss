@@ -1,0 +1,28 @@
+@mixin gradient-text {
+	color: transparent;
+	background-clip: text;
+	-webkit-background-clip: text;
+	background-image: linear-gradient(90deg, var(--color-accent-2), var(--color-accent-1));
+}
+
+@function easeInOutCubic($x) {
+	@if $x < 0.5 {
+		@return calc(4 * $x * $x * $x);
+	}
+	@if $x >= 0.5 {
+		@return calc(1 - math.pow(-2 * $x + 2, 3) / 2);
+	}
+}
+
+@function gradient($c0, $c1, $n: 5) {
+	$list: ();
+
+	@for $i from 0 through $n {
+		$t: calc($i / $n);
+		$p: calc(100% * easeInOutCubic($t));
+		$color: color.mix($c0, $c1, $p) $p;
+		$list: list.append($list, $color, $separator: comma);
+	}
+
+	@return $list;
+}
