@@ -16,9 +16,16 @@
 
 	const duration = 150
 	let unsubscribe: () => void
+	const queue: string[] = []
 
 	const search = async (text: string) => {
 		if (text.length < 3) return
+
+		// Prevent multiple searches simultaneously.
+		if (loading) {
+			queue.push(text)
+			return
+		}
 
 		loading = true
 
@@ -37,6 +44,10 @@
 		}
 
 		loading = false
+
+		if (queue.length > 0) {
+			search(queue.shift()!)
+		}
 	}
 
 	onMount(() => {
