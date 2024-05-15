@@ -2,7 +2,7 @@
 	import '../styles/global.scss'
 	import '../app.css'
 	import { blur } from 'svelte/transition'
-	import backgroundImageUrl from '../assets/image.png?lossless&format=webp&imagetools'
+	import backgroundImageUrl from '../assets/image.png?lossless&format=webp&flip&imagetools'
 	import Footer from './Footer.svelte'
 
 	const css = `
@@ -12,6 +12,7 @@
 </script>
 
 <svelte:head>
+	<title>Funk Finder 🔍</title>
 	{@html `<${''}style>${css}</style>`}
 </svelte:head>
 
@@ -80,11 +81,9 @@
 			background-size: cover;
 			background-position-x: 60%;
 
-			mask: linear-gradient(135deg, gradient(white, transparent)),
-				linear-gradient(to bottom, white, transparent);
+			mask: linear-gradient(45deg, gradient(white, transparent)),
+				linear-gradient(to bottom, transparent, white);
 			mask-composite: subtract;
-
-			scale: 1 -1;
 		}
 	}
 </style>

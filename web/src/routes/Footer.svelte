@@ -2,7 +2,7 @@
 	<nav>
 		<ul>
 			<li>
-				<h2 class="text-lg mb-2">Links</h2>
+				<h2 class="text-xl mb-2">Links</h2>
 			</li>
 
 			<li>
@@ -11,6 +11,16 @@
 
 			<li>
 				<a href="/info">Weitere <span class="gradient-text">Infos</span> und Impressum</a>
+			</li>
+
+			<li>
+				Alle Posts gehören
+				<a
+					class="gradient-text"
+					href="https://instagram.com/funk"
+					target="_blank"
+					rel="noreferrer nofollow">@funk</a
+				>
 			</li>
 
 			<li>
