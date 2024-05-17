@@ -35,7 +35,7 @@ export function ocr(
 	return text.trim().replaceAll(/\s+/g, ' ')
 }
 
-if (import.meta.main) {
+export async function ocrAll() {
 	// Check for requested language data.
 	checkForLangData([...config.langs, 'osd'])
 
@@ -52,7 +52,7 @@ if (import.meta.main) {
 		if (!medium.url) continue
 
 		try {
-			const text = await ocr(medium.url)
+			const text = ocr(medium.url)
 
 			await pb.collection<Db.Medium<true>>('media').update(medium.id, { text, processed: true })
 

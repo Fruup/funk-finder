@@ -1,3 +1,11 @@
+FROM oven/bun:latest as dev
+
+WORKDIR /work/web
+
+CMD bun i && bun run dev
+
+# ---------------------------------------
+
 FROM oven/bun:latest as builder
 
 WORKDIR /work/web

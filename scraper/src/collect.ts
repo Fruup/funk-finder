@@ -5,6 +5,7 @@ import { isImageNode, isSidecarNode, type Metadata, type Post } from './types'
 import Pocketbase, { ClientResponseError, type RecordModel } from 'pocketbase'
 import type * as Db from '@funk-finder/db/types/models'
 import { toArray } from './helpers/misc'
+import { readLine } from './helpers/readLine'
 
 const production = process.env.NODE_ENV === 'production'
 
@@ -59,7 +60,7 @@ export const readTimeStamp = (filename: string): number | null => {
 	return Date.UTC(year, month - 1, date, hour, minute, second)
 }
 
-export async function collect(target: string) {
+async function collect(target: string) {
 	const posts: Post[] = []
 	const dir = fs.readdirSync(target, { recursive: false, withFileTypes: true })
 
@@ -137,38 +138,36 @@ async function writeTimestampsFile(file?: string, time?: Date) {
 	if (!time) return
 	const timestamp = time.toISOString()
 
+	console.log(`Writing timestamp "${timestamp}" to file.`)
+
 	await Bun.write(
 		file || './state/timestamps.ini',
 		//
-		`[funk]\n` + `profile-id = 9543220683\n` + `post-timestamp = ${timestamp}\n`,
+		`[funk]\n` + //
+			`profile-id = 9543220683\n` +
+			`post-timestamp = ${timestamp}\n`,
 	)
 }
 
 function cleanup() {
 	// Delete the downloaded posts.
-	// fs.rmdirSync(config.target, { recursive: true })
-	// Delete downloaded images.
-	// fs.rmdirSync(config.tempDir, { recursive: true })
+	fs.rmdirSync(config.target, { recursive: true })
 }
 
-async function main() {
+export async function collectAll() {
 	let posts: Post[]
 
-	if (true) {
-		// await writeTimestampsFile()
+	await writeTimestampsFile()
 
-		// Load new posts from Instagram.
-		// await loadPosts({ profile: config.target })
-
-		// Collect metadata from the downloaded posts.
-		posts = await collect(config.target)
-
-		// if (!production) {
-		// 	Bun.write('./logs/posts.json', JSON.stringify(posts, null, 2), { createPath: true })
-		// }
-	} else {
-		posts = await Bun.file('./logs/posts.json').json()
+	if (!production && !(await readLine('Continue? (y/n)'))) {
+		process.exit(0)
 	}
+
+	// Load new posts from Instagram.
+	await loadPosts({ profile: config.target })
+
+	// Collect metadata from the downloaded posts.
+	posts = await collect(config.target)
 
 	// Save the posts to the database.
 	const pb = new Pocketbase(config.pocketbasePath)
@@ -181,6 +180,7 @@ async function main() {
 				caption: post.caption,
 				shortcode: post.shortcode,
 				igId: post.igId,
+				time: post.time ? new Date(post.time).toISOString() : undefined,
 			} satisfies Partial<Db.Post>)
 
 			for (const medium of post.media) {
@@ -208,9 +208,9 @@ async function main() {
 	}
 
 	// Cleanup in production.
-	// if (production) cleanup()
+	if (production) cleanup()
 }
 
 if (import.meta.main) {
-	await main()
+	await collectAll()
 }

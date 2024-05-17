@@ -6,4 +6,4 @@ set -e
 load-session.sh
 
 # run
-fastapi ${COMMAND:-"run"} py/api.py --port $PORT --host $HOST
+/root/.bun/bin/bun run src/job.ts

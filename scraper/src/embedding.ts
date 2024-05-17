@@ -13,10 +13,14 @@ import { refineText } from './refineText'
 import { Timing } from './helpers/timing'
 import { readLine } from './helpers/readLine'
 
+const production = process.env.NODE_ENV === 'production'
+
 const config = {
-	chromaPath: 'http://localhost:8000',
+	chromaPath: 'http://chroma:8000',
+	// chromaPath: 'http://localhost:8000',
 	// chromaPath: 'http://host.docker.internal:8000',
-	pocketbasePath: 'http://localhost:8080',
+	pocketbasePath: 'http://db:8080',
+	// pocketbasePath: 'http://localhost:8080',
 	// pocketbasePath: 'http://host.docker.internal:8080',
 	collectionName: 'media',
 	openAiKey: import.meta.env.OPENAI_API_KEY,
@@ -30,7 +34,7 @@ let chroma: ChromaClient
 let mediaCollection: Collection
 let embedder: IEmbeddingFunction
 
-async function init() {
+export async function createEmbeddings() {
 	if (!openai) {
 		if (!config.openAiKey) {
 			throw Error('OpenAI API key is required.')
@@ -129,7 +133,7 @@ async function init() {
 	if (ids.length) {
 		console.log(`📥 Inserting ${ids.length} item(s)...`)
 
-		if (!(await readLine('Continue? (y/n)'))) {
+		if (!production && !(await readLine('Continue? (y/n)'))) {
 			process.exit(0)
 		}
 
@@ -156,5 +160,5 @@ async function init() {
 }
 
 if (import.meta.main) {
-	await init()
+	await createEmbeddings()
 }

@@ -43,11 +43,10 @@ RUN cmake --build build --config Release --target install
 
 # ------------------------------------------------------
 
-FROM base as dev
+FROM base as base-2
 
-# Install bun
-RUN apt-get install curl unzip -y
-RUN curl -fsSL https://bun.sh/install | bash
+WORKDIR /work/scraper
+RUN apt-get update
 
 RUN apt-get install pip -y
 
@@ -58,5 +57,36 @@ RUN tesseract --version
 # Install instaloader
 RUN pip install instaloader
 
-# CMD bash
-# CMD bun run src/main.ts
+# Install bun
+RUN apt-get install curl unzip -y
+RUN curl -fsSL https://bun.sh/install | bash
+
+# ------------------------------------------------------
+
+FROM base-2 as prod
+
+ENV NODE_ENV=production
+
+# Install dependencies
+ADD scraper/package.json scraper/bun.lockb ./
+RUN /root/.bun/bin/bun install --production --no-save
+
+# Add OCR data.
+ADD scraper/tessdata ./tessdata
+
+# Add sources.
+COPY scraper/src ./src
+
+# Add entrypoint.
+ADD .docker/scraper/job/entry.sh /usr/bin/docker-entry.sh
+RUN chmod +x /usr/bin/docker-entry.sh
+ADD .docker/scraper/load-session.sh /usr/bin/load-session.sh
+RUN chmod +x /usr/bin/load-session.sh
+
+CMD docker-entry.sh
+
+# ------------------------------------------------------
+
+FROM base-2 as dev
+
+CMD bash

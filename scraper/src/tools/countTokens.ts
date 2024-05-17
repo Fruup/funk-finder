@@ -1,7 +1,7 @@
-import { getPocketbase } from './helpers/config'
+import { getPocketbase } from '../helpers/config'
 import type { Db } from '@funk-finder/db'
 import { get_encoding } from 'tiktoken'
-import './helpers/shims'
+import '../helpers/shims'
 
 const pb = getPocketbase()
 const enc = get_encoding('cl100k_base')
