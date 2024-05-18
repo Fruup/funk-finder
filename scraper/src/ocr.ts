@@ -1,8 +1,8 @@
 import { execSync } from 'child_process'
-import Pocketbase from 'pocketbase'
 import type * as Db from '@funk-finder/db/types/models'
 import { checkForLangData } from './helpers/checkForLangData'
 import { Timing } from './helpers/timing'
+import { getPocketbase } from './helpers/config'
 
 const config = {
 	langs: ['deu', 'eng'],
@@ -39,7 +39,7 @@ export async function ocrAll() {
 	// Check for requested language data.
 	checkForLangData([...config.langs, 'osd'])
 
-	const pb = new Pocketbase(import.meta.env.POCKETBASE_PATH)
+	const pb = getPocketbase()
 
 	const media = await pb.collection<Db.Medium<true>>('media').getFullList({
 		filter: `processed = false`,

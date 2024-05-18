@@ -2,10 +2,11 @@ version: '3.9'
 name: funk-finder
 services:
   web:
-    container_name: gcr.io/fruup/funk-finder-web
+    image: ghcr.io/fruup/funk-finder-web
     build:
       dockerfile: .docker/web/Dockerfile
       target: prod
+    platform: linux/amd64
     ports:
       - 3000:3000
     environment:
@@ -14,36 +15,40 @@ services:
       - funk-finder
 
   db:
-    container_name: gcr.io/fruup/funk-finder-db
+    image: ghcr.io/fruup/funk-finder-db
     build:
       dockerfile: .docker/db/Dockerfile
+    platform: linux/amd64
     ports:
       - 8080:8080
     networks:
       - funk-finder
 
   scraper-job:
-    container_name: gcr.io/fruup/funk-finder-scraper/job
+    image: ghcr.io/fruup/funk-finder-scraper/job
     build:
       dockerfile: .docker/scraper/job/Dockerfile
       target: prod
+    platform: linux/amd64
     env_file:
       - scraper/.env
     networks:
       - funk-finder
 
   scraper-api:
-    container_name: gcr.io/fruup/funk-finder-scraper/api
+    image: ghcr.io/fruup/funk-finder-scraper/api
     build:
       dockerfile: .docker/scraper/api/Dockerfile
       target: prod
+    platform: linux/amd64
     networks:
       - funk-finder
 
   chroma:
-    container_name: gcr.io/fruup/funk-finder-chroma
+    image: ghcr.io/fruup/funk-finder-chroma
     build:
       dockerfile: .docker/chroma/Dockerfile
+    platform: linux/amd64
     networks:
       - funk-finder
 

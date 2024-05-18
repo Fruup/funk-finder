@@ -8,8 +8,8 @@
 	--text-0: #fafafa;
 	--text-1: #cbcbcb;
 
-	--color-accent-1: rgb(203, 0, 255);
-	--color-accent-2: rgb(255, 128, 0);
+	--color-accent-1: #{$color-accent-1};
+	--color-accent-2: #{$color-accent-2};
 }
 
 :root {
@@ -23,8 +23,7 @@
 	scroll-behavior: smooth;
 }
 
-:root,
-body {
+:root {
 	overflow-x: hidden;
 }
 

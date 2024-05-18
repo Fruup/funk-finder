@@ -22,10 +22,10 @@ RUN apt-get install ninja-build -y
 RUN apt-get install cmake -y
 RUN apt-get install git -y
 
-# Clone tesseract
+# Clone tesseract. (Use a specific commit to avoid breaking changes)
 RUN git clone https://github.com/tesseract-ocr/tesseract
-RUN cd tesseract
 WORKDIR /tesseract
+RUN git reset --hard bcfdd5e51164311ee96cacec33bce4f68632f68e
 
 # Build tesseract
 RUN mkdir build

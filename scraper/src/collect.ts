@@ -2,19 +2,17 @@ import { execSync } from 'node:child_process'
 import fs from 'node:fs'
 import { join } from 'node:path'
 import { isImageNode, isSidecarNode, type Metadata, type Post } from './types'
-import Pocketbase, { ClientResponseError, type RecordModel } from 'pocketbase'
+import { ClientResponseError, type RecordModel } from 'pocketbase'
 import type * as Db from '@funk-finder/db/types/models'
 import { toArray } from './helpers/misc'
 import { readLine } from './helpers/readLine'
+import { getPocketbase } from './helpers/config'
 
 const production = process.env.NODE_ENV === 'production'
 
 const config = {
-	// pocketbasePath: 'http://localhost:8080',
-	pocketbasePath: 'http://host.docker.internal:8080',
 	target: 'funk',
 	// target: 'leonmaj7',
-	tempDir: '.tmp',
 }
 
 export async function loadPosts(target: { posts?: string | string[]; profile?: string }) {
@@ -126,7 +124,7 @@ async function collect(target: string) {
 async function writeTimestampsFile(file?: string, time?: Date) {
 	if (!time) {
 		// Get the last post's timestamp.
-		const pb = new Pocketbase(config.pocketbasePath)
+		const pb = getPocketbase()
 		const response = await pb
 			.collection<Db.Post & RecordModel>('posts')
 			.getFirstListItem('time != null', { sort: '-time' })
@@ -170,7 +168,7 @@ export async function collectAll() {
 	posts = await collect(config.target)
 
 	// Save the posts to the database.
-	const pb = new Pocketbase(config.pocketbasePath)
+	const pb = getPocketbase()
 
 	for (const post of posts) {
 		try {

@@ -25,4 +25,4 @@ EXPOSE 8080
 # start PocketBase
 CMD /pb/pocketbase serve --http=${HOST}:8080
 
-ADD db/pb/pb_data/backups/pb_backup_acme_20240503193137.zip /pb/pb_data/backups/
+ADD db/pb/pb_data/backups/pb_backup_acme_20240517142845.zip /pb/pb_data/backups/

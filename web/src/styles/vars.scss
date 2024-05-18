@@ -1,3 +1,6 @@
+$color-accent-1: rgb(203, 0, 255);
+$color-accent-2: rgb(255, 128, 0);
+
 @mixin gradient-text {
 	color: transparent;
 	background-clip: text;

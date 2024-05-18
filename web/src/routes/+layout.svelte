@@ -68,7 +68,6 @@
 	:global(body) {
 		min-height: 100vh;
 		position: relative;
-		overflow-y: visible;
 
 		&::before {
 			position: absolute;
