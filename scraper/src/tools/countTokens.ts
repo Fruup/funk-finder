@@ -3,7 +3,7 @@ import type { Db } from '@funk-finder/db'
 import { get_encoding } from 'tiktoken'
 import '../helpers/shims'
 
-const pb = getPocketbase()
+const pb = await getPocketbase()
 const enc = get_encoding('cl100k_base')
 
 const getNumberOfTokens = (text: string) => enc.encode(text).length

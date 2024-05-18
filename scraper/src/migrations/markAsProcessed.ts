@@ -1,6 +1,6 @@
 import { getPocketbase } from '../helpers/config'
 
-const pb = getPocketbase()
+const pb = await getPocketbase()
 
 const media = await pb.collection('media').getFullList()
 

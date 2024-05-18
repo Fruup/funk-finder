@@ -55,6 +55,14 @@ export async function init(): Promise<{
 	if (!pb) {
 		pb = new Pocketbase(env.POCKETBASE_PATH)
 		pb.autoCancellation(false)
+
+		// Authenticate.
+		if (!env.POCKETBASE_AUTH) {
+			throw new Error('POCKETBASE_AUTH is required')
+		}
+
+		const [username, ...rest] = env.POCKETBASE_AUTH.split(':')
+		await pb.collection('users').authWithPassword(username, rest.join(':'))
 	}
 
 	return { chroma, collection, pb }

@@ -124,7 +124,7 @@ async function collect(target: string) {
 async function writeTimestampsFile(file?: string, time?: Date) {
 	if (!time) {
 		// Get the last post's timestamp.
-		const pb = getPocketbase()
+		const pb = await getPocketbase()
 		const response = await pb
 			.collection<Db.Post & RecordModel>('posts')
 			.getFirstListItem('time != null', { sort: '-time' })
@@ -168,7 +168,7 @@ export async function collectAll() {
 	posts = await collect(config.target)
 
 	// Save the posts to the database.
-	const pb = getPocketbase()
+	const pb = await getPocketbase()
 
 	for (const post of posts) {
 		try {

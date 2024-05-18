@@ -1,18 +1,38 @@
-import { ChromaClient, OpenAIEmbeddingFunction } from 'chromadb'
+import { ChromaClient, Collection, OpenAIEmbeddingFunction } from 'chromadb'
 import Pocketbase from 'pocketbase'
 
-export function getPocketbase() {
+let pb: Pocketbase
+let chroma: ChromaClient
+let embeddingFunction: OpenAIEmbeddingFunction
+let mediaCollection: Collection
+
+export async function getPocketbase() {
+	if (pb) return pb
+
 	if (!import.meta.env.POCKETBASE_PATH) {
 		throw new Error('Missing environment variable POCKETBASE_PATH.')
 	}
 
-	const pb = new Pocketbase(import.meta.env.POCKETBASE_PATH)
+	pb = new Pocketbase(import.meta.env.POCKETBASE_PATH)
 	pb.autoCancellation(false)
+
+	// Authenticate.
+	if (!import.meta.env.POCKETBASE_AUTH) throw Error('Missing environment variable POCKETBASE_AUTH.')
+	const [username, ...rest] = import.meta.env.POCKETBASE_AUTH.split(':')
+	await pb.collection('users').authWithPassword(username, rest.join(''))
 
 	return pb
 }
 
 export async function getChroma() {
+	if (chroma && embeddingFunction && mediaCollection) {
+		return {
+			chroma,
+			embeddingFunction,
+			mediaCollection,
+		}
+	}
+
 	if (!import.meta.env.CHROMA_PATH) throw new Error('Missing environment variable CHROMA_PATH.')
 	if (!import.meta.env.OPENAI_API_KEY)
 		throw new Error('Missing environment variable OPENAI_API_KEY.')
@@ -21,16 +41,16 @@ export async function getChroma() {
 
 	console.log(`Accessing ChromaDB unter ${import.meta.env.CHROMA_PATH}.`)
 
-	const chroma = new ChromaClient({
+	chroma = new ChromaClient({
 		path: import.meta.env.CHROMA_PATH,
 	})
 
-	const embeddingFunction = new OpenAIEmbeddingFunction({
+	embeddingFunction = new OpenAIEmbeddingFunction({
 		openai_api_key: import.meta.env.OPENAI_API_KEY,
 		openai_model: import.meta.env.EMBEDDING_MODEL,
 	})
 
-	const mediaCollection = await chroma.getCollection({
+	mediaCollection = await chroma.getCollection({
 		name: 'media',
 		embeddingFunction,
 	})

@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM alpine:latest as base
 
 ARG PB_VERSION=0.22.11
 # ARG PLATFORM=linux_arm64
@@ -23,6 +23,15 @@ ENV HOST=0.0.0.0
 EXPOSE 8080
 
 # start PocketBase
+# HOST should be resolved at runtime, so IPv6 can be used in production.
 CMD /pb/pocketbase serve --http=${HOST}:8080
 
-ADD db/pb/pb_data/backups/pb_backup_acme_20240517142845.zip /pb/pb_data/backups/
+# ----------------------------------------------
+
+FROM base as dev
+
+# ----------------------------------------------
+
+FROM base as prod
+
+ADD db/pb/pb_data/backups/init.zip /pb/pb_data/backups/

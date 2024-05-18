@@ -39,7 +39,7 @@ export async function ocrAll() {
 	// Check for requested language data.
 	checkForLangData([...config.langs, 'osd'])
 
-	const pb = getPocketbase()
+	const pb = await getPocketbase()
 
 	const media = await pb.collection<Db.Medium<true>>('media').getFullList({
 		filter: `processed = false`,

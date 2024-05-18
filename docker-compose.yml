@@ -17,6 +17,7 @@ services:
   db:
     build:
       dockerfile: .docker/db/Dockerfile
+      target: dev
     ports:
       - 8080:8080
     volumes:
@@ -32,6 +33,8 @@ services:
     volumes:
       - ./scraper:/work/scraper
       - ./db:/work/db:ro
+    env_file:
+      - scraper/.env
     networks:
       - funk-finder
 
@@ -43,6 +46,8 @@ services:
       - 3000:3000
     volumes:
       - ./scraper:/work/scraper
+    env_file:
+      - scraper/.env
     networks:
       - funk-finder
 

@@ -1,7 +1,7 @@
 import { getPocketbase } from '../helpers/config'
 
 if (import.meta.main) {
-	const pb = getPocketbase()
+	const pb = await getPocketbase()
 
 	const media = await pb.collection('media').getFullList({
 		filter: `text ~ "%danke%post%like%"`,
