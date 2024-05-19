@@ -10,6 +10,7 @@
 	import Drawer from '$lib/ui/Drawer.svelte'
 	import Loader from './Loader.svelte'
 	import Box from '$lib/ui/Box.svelte'
+	import analytics from '$lib/analytics'
 
 	let loading = false
 	let items: SearchResponseItem[] = []
@@ -32,8 +33,11 @@
 		try {
 			unsubscribe?.()
 
-			const store = await api.search(text)
+			// Track search event.
+			analytics.event('search', { query: text })
 
+			// Send query.
+			const store = await api.search(text)
 			unsubscribe = store.subscribe((value) => {
 				items = value
 			})

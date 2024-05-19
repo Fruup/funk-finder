@@ -9,6 +9,7 @@
 	},
 	"hide-files.files": [],
 	"cSpell.words": [
+		"autocapture",
 		"bunx",
 		"chromadb",
 		"fastapi",
@@ -25,6 +26,7 @@
 		"otiai",
 		"pocketbase",
 		"Pocketbase",
+		"posthog",
 		"sessionfile",
 		"shortcode",
 		"shortcodes",

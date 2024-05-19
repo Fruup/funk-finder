@@ -4,6 +4,9 @@
 	import { blur } from 'svelte/transition'
 	import backgroundImageUrl from '../assets/image.png?lossless&format=webp&flip&imagetools'
 	import Footer from './Footer.svelte'
+	import analytics from '$lib/analytics'
+
+	analytics.setupNavigationEvents()
 
 	const css = `
 		:root {
