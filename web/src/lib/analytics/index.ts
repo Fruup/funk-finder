@@ -1,6 +1,6 @@
 import { browser } from '$app/environment'
 import { afterNavigate, beforeNavigate } from '$app/navigation'
-import { env } from '$env/dynamic/private'
+import { env } from '$env/dynamic/public'
 import type { SearchResponseItem } from '$lib/types'
 import { posthog, type PostHog } from 'posthog-js'
 
@@ -9,7 +9,7 @@ let client: PostHog | null = null
 export default {
 	init() {
 		client =
-			posthog.init(env.POSTHOG_KEY, {
+			posthog.init(env.PUBLIC_POSTHOG_KEY, {
 				api_host: 'https://eu.i.posthog.com',
 				persistence: 'memory',
 				autocapture: false,
