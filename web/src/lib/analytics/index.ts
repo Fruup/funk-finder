@@ -1,5 +1,7 @@
 import { browser } from '$app/environment'
 import { afterNavigate, beforeNavigate } from '$app/navigation'
+import { env } from '$env/dynamic/private'
+import type { SearchResponseItem } from '$lib/types'
 import { posthog, type PostHog } from 'posthog-js'
 
 let client: PostHog | null = null
@@ -7,7 +9,7 @@ let client: PostHog | null = null
 export default {
 	init() {
 		client =
-			posthog.init('phc_fTAEbxHgsFJpc39O4mDmnYvCwaA8a3J5OHropOfXUz6', {
+			posthog.init(env.POSTHOG_KEY, {
 				api_host: 'https://eu.i.posthog.com',
 				persistence: 'memory',
 				autocapture: false,
@@ -50,5 +52,10 @@ export default {
 interface AnalyticsEvents {
 	search: {
 		query: string
+	}
+	clickItem: {
+		item: SearchResponseItem
+		id: string
+		shortcode: string
 	}
 }

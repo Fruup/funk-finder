@@ -54,6 +54,10 @@
 		}
 	}
 
+	function handleClickPost(item: SearchResponseItem) {
+		analytics.event('clickItem', { item, id: item.id, shortcode: item.shortcode })
+	}
+
 	onMount(() => {
 		return () => {
 			unsubscribe?.()
@@ -99,6 +103,7 @@
 					href="https://instagram.com/p/{item.shortcode}"
 					target="_blank"
 					rel="nofollow noreferrer"
+					on:click={() => handleClickPost(item)}
 				>
 					<Image {item} />
 				</a>
