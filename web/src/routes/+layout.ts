@@ -4,7 +4,7 @@ import analytics from '$lib/analytics'
 export const prerender = true
 
 export const load = async () => {
-	if (browser) {
-		analytics.init()
-	}
+	if (!browser) return
+
+	await analytics.init()
 }

@@ -110,6 +110,7 @@ async function updateMediumUrl(igId: string, url: string, pb: Pocketbase) {
 
 		await pb.collection<Db.Medium<true>>('media').update(medium.id, { url })
 	} catch (e) {
+		console.error('Error updating medium URL', { igId, url })
 		console.error(e)
 	}
 }

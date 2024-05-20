@@ -2,13 +2,16 @@ import { browser } from '$app/environment'
 import { afterNavigate, beforeNavigate } from '$app/navigation'
 import { env } from '$env/dynamic/public'
 import type { SearchResponseItem } from '$lib/types'
-import { posthog, type PostHog } from 'posthog-js'
+import type { PostHog } from 'posthog-js'
 
-let client: PostHog | null = null
+let posthog: PostHog | null = null
 
 export default {
-	init() {
-		client =
+	async init() {
+		try {
+			return
+			posthog = (await import('posthog-js')).default
+
 			posthog.init(env.PUBLIC_POSTHOG_KEY, {
 				api_host: 'https://eu.i.posthog.com',
 				persistence: 'memory',
@@ -16,14 +19,19 @@ export default {
 				capture_pageview: false,
 				capture_pageleave: false,
 				disable_compression: import.meta.env.DEV,
-			}) || null
+			})
+		} catch (e) {
+			console.error(e)
+		}
 	},
 
 	setupNavigationEvents() {
 		if (!browser) return
 
-		beforeNavigate(() => posthog.capture('$pageleave'))
-		afterNavigate(() => posthog.capture('$pageview'))
+		this._unsafe((client) => {
+			beforeNavigate(() => client.capture('$pageleave'))
+			afterNavigate(() => client.capture('$pageview'))
+		})
 	},
 
 	event<EventName extends keyof AnalyticsEvents>(
@@ -37,8 +45,8 @@ export default {
 
 	_unsafe(f: (client: PostHog) => any) {
 		try {
-			if (!client) return
-			const result = f(client)
+			if (!posthog) return
+			const result = f(posthog)
 
 			if (result instanceof Promise) {
 				result.catch(console.error)

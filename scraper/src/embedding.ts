@@ -1,101 +1,38 @@
-import {
-	ChromaClient,
-	Collection,
-	IncludeEnum,
-	OpenAIEmbeddingFunction,
-	TransformersEmbeddingFunction,
-	type IEmbeddingFunction,
-} from 'chromadb'
-import Pocketbase from 'pocketbase'
 import type * as Db from '@funk-finder/db/types/models'
-import OpenAI from 'openai'
-import { refineText } from './refineText'
 import { Timing } from './helpers/timing'
 import { readLine } from './helpers/readLine'
+import { getChroma, getPocketbase } from './helpers/config'
 
 const production = process.env.NODE_ENV === 'production'
 
-const config = {
-	chromaPath: 'http://chroma:8000',
-	// chromaPath: 'http://localhost:8000',
-	// chromaPath: 'http://host.docker.internal:8000',
-	pocketbasePath: 'http://db:8080',
-	// pocketbasePath: 'http://localhost:8080',
-	// pocketbasePath: 'http://host.docker.internal:8080',
-	collectionName: 'media',
-	openAiKey: import.meta.env.OPENAI_API_KEY,
-	embeddingFunction: 'openai' satisfies 'local' | 'openai',
-	// embeddingFunction: 'local' satisfies 'local' | 'openai',
-	embeddingModel: import.meta.env.EMBEDDING_MODEL,
-}
-
-let openai: OpenAI
-let chroma: ChromaClient
-let mediaCollection: Collection
-let embedder: IEmbeddingFunction
-
 export async function createEmbeddings() {
-	if (!openai) {
-		if (!config.openAiKey) {
-			throw Error('OpenAI API key is required.')
-		}
-
-		openai = new OpenAI({
-			apiKey: config.openAiKey,
-		})
-	}
-
 	// Add media to chroma db.
-	chroma = new ChromaClient({
-		path: config.chromaPath,
-	})
+	const { mediaCollection } = await getChroma()
 
-	// embedder
-	if (config.embeddingFunction === 'local') {
-		embedder = new TransformersEmbeddingFunction({
-			// model,
-		})
-	} else if (config.embeddingFunction === 'openai') {
-		if (!config.openAiKey) {
-			throw Error('OpenAI API key is required.')
-		}
+	console.log(`💡 Media collection contains ${await mediaCollection.count()} item(s).`)
 
-		embedder = new OpenAIEmbeddingFunction({
-			openai_api_key: config.openAiKey,
-			openai_model: config.embeddingModel,
-		})
-	} else {
-		throw Error(`Invalid embedding function "${config.embeddingFunction}".`)
-	}
-
-	mediaCollection = await chroma.getOrCreateCollection({
-		name: config.collectionName,
-		embeddingFunction: embedder,
-		metadata: { 'hnsw:space': 'cosine' },
-	})
-
-	console.log(
-		`💡 Database collection "${
-			config.collectionName
-		}" contains ${await mediaCollection.count()} item(s).`,
-	)
-
-	const pb = new Pocketbase(config.pocketbasePath)
+	const pb = await getPocketbase()
 
 	const ids: string[] = []
 	const documents: string[] = []
 	const metadatas: { type: 'medium' | 'post' }[] = []
 
 	// insert media
-	const media = await pb
-		.collection<Db.Medium<true>>('media')
-		.getFullList({ filter: `text != null && processed = true` })
+	const media = await pb.collection<Db.Medium<true>>('media').getFullList({
+		filter: `
+			text != null &&
+			processed = true &&
+			excluded != true
+		`,
+	})
 
 	for (const medium of media) {
 		if (!medium.text) continue
 
 		// Refine the text and remove clutter.
-		const document = await refineText(medium.text)
+		// TODO: only if it does not exist yet
+		// const document = await refineText(medium.text)
+		const document = medium.text
 
 		ids.push(medium.id)
 		documents.push(document)
@@ -131,19 +68,19 @@ export async function createEmbeddings() {
 
 	// Insert the new items.
 	if (ids.length) {
-		console.log(`📥 Inserting ${ids.length} item(s)...`)
+		/**
+		 * Has to be done in batches because otherwise
+		 * Chroma throws (merely saying "Killed").
+		 */
+		const BATCH_SIZE = 30
+
+		console.log(`📥 Inserting ${ids.length} item(s) in batches of ${BATCH_SIZE}...`)
 
 		if (!production && !(await readLine('Continue? (y/n)'))) {
 			process.exit(0)
 		}
 
 		const timing = new Timing(ids.length)
-
-		/**
-		 * Has to be done in batches because otherwise
-		 * Chroma throws (merely saying "Killed").
-		 */
-		const BATCH_SIZE = 30
 
 		for (let i = 0; i < ids.length; i += BATCH_SIZE) {
 			await mediaCollection.upsert({
@@ -156,6 +93,8 @@ export async function createEmbeddings() {
 		}
 
 		timing.finish()
+	} else {
+		console.log('💡 No new items to insert.')
 	}
 }
 

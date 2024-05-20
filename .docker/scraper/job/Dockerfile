@@ -24,8 +24,8 @@ RUN apt-get install git -y
 
 # Clone tesseract. (Use a specific commit to avoid breaking changes)
 RUN git clone https://github.com/tesseract-ocr/tesseract
-WORKDIR /tesseract
-RUN git reset --hard bcfdd5e51164311ee96cacec33bce4f68632f68e
+WORKDIR tesseract
+RUN git reset --hard 5d5a633a5d7abfb155a605be90f8033f82e9744f
 
 # Build tesseract
 RUN mkdir build

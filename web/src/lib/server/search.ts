@@ -3,6 +3,7 @@ import * as Db from '@funk-finder/db/types/models'
 import type { SearchResponse, SearchResponseItem, SearchResponseItemType } from '$lib/types'
 import { MediaUrlUpdater, type MediaUrlUpdate } from './updateMediaURLs'
 import { init } from './init'
+import { ClientResponseError } from 'pocketbase'
 
 /**
  * Searches the embeddings database for the given text.
@@ -46,6 +47,10 @@ export async function search(text: string): Promise<{
 				const medium = await pb
 					.collection<Db.Medium<true, 'post'>>('media')
 					.getOne(id, { expand: 'post' })
+					.catch((e) => {
+						console.error('Error fetching medium', id)
+						throw e
+					})
 
 				if (!medium.text) {
 					console.warn('Text not found for medium', medium.id)
@@ -72,12 +77,26 @@ export async function search(text: string): Promise<{
 					score,
 				}
 			} else if (metadata.type === 'post') {
-				const post = await pb.collection<Db.Post<true>>('posts').getOne(id)
+				const post = await pb
+					.collection<Db.Post<true>>('posts')
+					.getOne(id)
+					.catch((e) => {
+						console.error('Error fetching post', id)
+						throw e
+					})
+
 				if (!post.caption) return
 
 				const medium = await pb
 					.collection<Db.Medium<true>>('media')
 					.getFirstListItem(`post = "${post.id}"`, { sort: 'created' })
+					.catch((e) => {
+						// This can happen if a post has only video media attached.
+						if (e instanceof ClientResponseError && e.status === 404) return
+
+						console.error('Error fetching medium for post', post.id)
+						throw e
+					})
 
 				if (!medium) {
 					console.warn('Medium not found for post', post.id)
