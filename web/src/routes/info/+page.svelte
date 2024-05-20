@@ -2,6 +2,8 @@
 	import { browser } from '$app/environment'
 	import { get, writable } from 'svelte/store'
 
+	let isDisabled = false
+
 	const plannedFeatures = [
 		{
 			id: 'filter-images',
@@ -40,10 +42,18 @@
 	async function handleAction(id: string) {
 		if (featuresPushed.has(id)) return
 
-		const response = await fetch(`/api/v1/features/${id}/push`, { method: 'POST' })
-		if (response.ok) {
-			// Store in local storage.
-			featuresPushed.push(id)
+		isDisabled = true
+
+		try {
+			const response = await fetch(`/api/v1/features/${id}/push`, { method: 'POST' })
+			if (response.ok) {
+				// Store in local storage.
+				featuresPushed.push(id)
+			}
+		} catch (e) {
+			console.error(e)
+		} finally {
+			isDisabled = false
 		}
 	}
 </script>
@@ -103,7 +113,7 @@
 							<button
 								type="button"
 								{title}
-								disabled={isSet}
+								disabled={isSet || isDisabled}
 								class="rounded-full ml-1 aspect-square w-auto h-[1lh] p-0 shadow-lg bg-slate-600 grid place-content-center hover:scale-105 transition-[scale] disabled:opacity-50 disabled:scale-100"
 								on:click={() => handleAction(id)}
 							>
