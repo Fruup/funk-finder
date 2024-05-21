@@ -17,10 +17,9 @@ let chroma: ChromaClient
 let pb: Pocketbase
 let collection: Collection
 
-export async function init(): Promise<{
+export async function getChroma(): Promise<{
 	chroma: ChromaClient
 	collection: Collection
-	pb: Pocketbase
 }> {
 	if (!chroma) {
 		chroma = new ChromaClient({
@@ -52,6 +51,10 @@ export async function init(): Promise<{
 		})
 	}
 
+	return { chroma, collection }
+}
+
+export async function getPocketbase() {
 	if (!pb) {
 		pb = new Pocketbase(env.POCKETBASE_PATH)
 		pb.autoCancellation(false)
@@ -65,5 +68,5 @@ export async function init(): Promise<{
 		await pb.collection('users').authWithPassword(username, rest.join(':'))
 	}
 
-	return { chroma, collection, pb }
+	return pb
 }

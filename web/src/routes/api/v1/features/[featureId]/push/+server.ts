@@ -1,11 +1,11 @@
-import { init } from '$lib/server/init'
+import { getPocketbase } from '$lib/server/init'
 import { error, text } from '@sveltejs/kit'
 import { ClientResponseError, type RecordModel } from 'pocketbase'
 
 export const POST = async ({ params }) => {
 	if (!params.featureId) throw error(400, 'No featureId provided')
 
-	const { pb } = await init()
+	const pb = await getPocketbase()
 	const featuresCollection = pb.collection<{ name: string; pushes: number } & RecordModel>(
 		'features',
 	)

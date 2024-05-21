@@ -2,7 +2,7 @@ import { IncludeEnum } from 'chromadb'
 import * as Db from '@funk-finder/db/types/models'
 import type { SearchResponse, SearchResponseItem, SearchResponseItemType } from '$lib/types'
 import { MediaUrlUpdater, type MediaUrlUpdate } from './updateMediaURLs'
-import { init } from './init'
+import { getChroma, getPocketbase } from './init'
 import { ClientResponseError } from 'pocketbase'
 
 /**
@@ -16,7 +16,8 @@ export async function search(text: string): Promise<{
 	result: SearchResponse
 	urlUpdatePromises: Promise<MediaUrlUpdate | null>[]
 }> {
-	const { collection, pb } = await init()
+	const pb = await getPocketbase()
+	const { collection } = await getChroma()
 
 	const result = await collection.query({
 		nResults: 21,

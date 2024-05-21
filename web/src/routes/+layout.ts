@@ -6,5 +6,5 @@ export const prerender = true
 export const load = async () => {
 	if (!browser) return
 
-	await analytics.init()
+	analytics.init()
 }

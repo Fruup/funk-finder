@@ -13,6 +13,7 @@
 		"@funk-finder/db": "../db",
 		"@sveltejs/adapter-node": "^5.0.1",
 		"@sveltejs/vite-plugin-svelte": "^3.0.0",
+		"@types/uuid": "^9.0.8",
 		"autoprefixer": "^10.4.19",
 		"postcss": "^8.4.38",
 		"posthog-js": "^1.131.4",
@@ -30,9 +31,11 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"openai": "^4.38.2",
+		"@sveltejs/kit": "^2.5.8",
 		"chromadb": "^1.8.1",
+		"openai": "^4.38.2",
 		"pocketbase": "^0.21.1",
-		"@sveltejs/kit": "^2.5.8"
+		"posthog-node": "^4.0.1",
+		"uuid": "^9.0.1"
 	}
 }

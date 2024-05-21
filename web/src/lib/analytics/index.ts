@@ -1,36 +1,30 @@
 import { browser } from '$app/environment'
 import { afterNavigate, beforeNavigate } from '$app/navigation'
-import { env } from '$env/dynamic/public'
 import type { SearchResponseItem } from '$lib/types'
-import type { PostHog } from 'posthog-js'
+import { v4 } from 'uuid'
 
-let posthog: PostHog | null = null
+let sessionId: string = ''
 
 export default {
-	async init() {
-		try {
-			return
-			posthog = (await import('posthog-js')).default
+	init() {
+		if (!browser) return
 
-			posthog.init(env.PUBLIC_POSTHOG_KEY, {
-				api_host: 'https://eu.i.posthog.com',
-				persistence: 'memory',
-				autocapture: false,
-				capture_pageview: false,
-				capture_pageleave: false,
-				disable_compression: import.meta.env.DEV,
-			})
-		} catch (e) {
-			console.error(e)
-		}
+		sessionId = v4()
 	},
 
 	setupNavigationEvents() {
 		if (!browser) return
 
-		this._unsafe((client) => {
-			beforeNavigate(() => client.capture('$pageleave'))
-			afterNavigate(() => client.capture('$pageview'))
+		beforeNavigate(({ from }) => {
+			if (!from) return
+			this.event('$pageleave', {
+				$current_url: from.url.pathname,
+			})
+		})
+
+		afterNavigate(({ to }) => {
+			if (!to) return
+			this.event('$pageview', { $current_url: to.url.pathname })
 		})
 	},
 
@@ -38,22 +32,11 @@ export default {
 		name: EventName,
 		params: AnalyticsEvents[EventName],
 	) {
-		this._unsafe((client) => {
-			client.capture(name, params)
+		fetch(`/api/v1/analytics?event=${encodeURIComponent(name)}&sessionId=${sessionId}`, {
+			body: JSON.stringify(params),
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
 		})
-	},
-
-	_unsafe(f: (client: PostHog) => any) {
-		try {
-			if (!posthog) return
-			const result = f(posthog)
-
-			if (result instanceof Promise) {
-				result.catch(console.error)
-			}
-		} catch (e) {
-			console.error(e)
-		}
 	},
 }
 
@@ -65,5 +48,12 @@ interface AnalyticsEvents {
 		item: SearchResponseItem
 		id: string
 		shortcode: string
+		// rank: number
+	}
+	$pageview: {
+		$current_url: string
+	}
+	$pageleave: {
+		$current_url: string
 	}
 }
