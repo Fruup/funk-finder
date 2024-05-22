@@ -34,8 +34,8 @@
 	]
 </script>
 
-<div class="mx-3 mb-8 top-1 z-50 text-center">
-	<div class="relative w-[min(100%,20rem)] m-auto">
+<div class="mx-3 mb-8 sticky top-1 z-50 text-center">
+	<div class="container relative w-[min(100%,20rem)] m-auto rounded-xl shadow-2xl">
 		{#if !value}
 			<div
 				transition:fade={{ duration: 200 }}
@@ -62,34 +62,73 @@
 		<input
 			autocomplete="off"
 			id="search-field"
-			class="w-full text-xl px-4 py-2 rounded-xl shadow-2xl pointer-events-auto"
+			class="w-full text-xl px-4 py-2 rounded-xl pointer-events-auto"
 			bind:value
 		/>
 	</div>
 </div>
 
 <style lang="scss">
+	@use 'sass:color';
+	@import '../styles/vars.scss';
+
+	$color-1: $color-accent-1;
+	$color-2: $color-accent-2;
+	$tw-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000),
+		var(--tw-shadow);
+
+	.container {
+		position: relative;
+		pointer-events: none;
+
+		$alpha: 0.5;
+		background: linear-gradient(
+			24deg,
+			color.change($color-1, $alpha: $alpha) 0%,
+			color.change($color-2, $alpha: $alpha) 60%,
+			color.change($color-2, $alpha: $alpha) 71%,
+			color.change($color-1, $alpha: $alpha) 100%
+		);
+
+		backdrop-filter: blur(4px);
+
+		// from https://dev.to/afif/border-with-gradient-and-radius-387f
+		&::before {
+			content: '';
+			position: absolute;
+			inset: 0;
+			border-radius: inherit;
+			padding: 3px;
+
+			background: linear-gradient(
+				24deg,
+				var(--color-accent-1) 0%,
+				var(--color-accent-2) 60%,
+				var(--color-accent-2) 71%,
+				var(--color-accent-1) 100%
+			);
+
+			mask:
+				linear-gradient(#fff 0 0) content-box,
+				linear-gradient(#fff 0 0);
+			mask-composite: exclude;
+		}
+
+		transition: scale 500ms ease;
+
+		&:focus-within {
+			scale: 1.05;
+		}
+	}
+
 	input {
 		font-size: 1rem;
 		width: min(100%, 20em);
 
-		outline: 2px solid var(--color-accent-2);
-		background: linear-gradient(
-			24deg,
-			var(--color-accent-1) 0%,
-			var(--color-accent-2) 60%,
-			var(--color-accent-2) 71%,
-			var(--color-accent-1) 100%
-		);
 		color: white !important;
+		background: transparent;
 
 		box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.5);
-
-		transition: scale 500ms ease;
-
-		&:focus {
-			scale: 1.05;
-		}
 	}
 
 	.cursor {
