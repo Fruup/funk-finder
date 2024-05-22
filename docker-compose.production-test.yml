@@ -1,0 +1,50 @@
+version: '3.9'
+name: funk-finder
+services:
+  web:
+    ports:
+      - 3000:3000
+    env_file:
+      - web/.env
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      - ORIGIN=http://localhost:3000
+    networks:
+      - funk-finder
+
+  db:
+    ports:
+      - 8080:8080
+    volumes:
+      - ./db/pb/pb_data:/pb/pb_data
+    networks:
+      - funk-finder
+
+  scraper-job:
+    env_file:
+      - scraper/.env
+    networks:
+      - funk-finder
+
+  scraper-api:
+    env_file:
+      - scraper/.env
+    networks:
+      - funk-finder
+
+  chroma:
+    networks:
+      - funk-finder
+
+networks:
+  funk-finder:
+    driver: bridge
+
+volumes:
+  chroma-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: ./chroma/data
+      o: bind
