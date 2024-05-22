@@ -16,7 +16,6 @@
 		"@types/uuid": "^9.0.8",
 		"autoprefixer": "^10.4.19",
 		"postcss": "^8.4.38",
-		"posthog-js": "^1.131.4",
 		"sass": "^1.75.0",
 		"svelte": "^4.0.0",
 		"svelte-adapter-bun": "^0.5.2",
@@ -35,7 +34,6 @@
 		"chromadb": "^1.8.1",
 		"openai": "^4.38.2",
 		"pocketbase": "^0.21.1",
-		"posthog-node": "^4.0.1",
 		"uuid": "^9.0.1"
 	}
 }

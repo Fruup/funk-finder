@@ -1,15 +1,10 @@
 import { browser } from '$app/environment'
 import { afterNavigate, beforeNavigate } from '$app/navigation'
 import type { SearchResponseItem } from '$lib/types'
-import { v4 } from 'uuid'
-
-let sessionId: string = ''
 
 export default {
 	init() {
 		if (!browser) return
-
-		sessionId = v4()
 	},
 
 	setupNavigationEvents() {
@@ -32,7 +27,7 @@ export default {
 		name: EventName,
 		params: AnalyticsEvents[EventName],
 	) {
-		fetch(`/api/v1/analytics?event=${encodeURIComponent(name)}&sessionId=${sessionId}`, {
+		fetch(`/api/v1/analytics?event=${encodeURIComponent(name)}`, {
 			body: JSON.stringify(params),
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
