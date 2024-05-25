@@ -49,3 +49,12 @@ export interface Post {
 		igId?: string
 	}[]
 }
+
+export interface ScraperApiPostsResponse {
+	type: 'GraphImage' | 'GraphSidecar'
+	igId: string
+	media: {
+		igId: string
+		url: string
+	}[]
+}

@@ -1,6 +1,8 @@
 import { env } from '$env/dynamic/private'
 import Pocketbase from 'pocketbase'
 import { type Db } from '@funk-finder/db'
+import type { ScraperApiPostsResponse } from '@funk-finder/scraper/src/types'
+import { isUrlOk } from '@funk-finder/scraper/src/updateMediaURLs'
 import '@funk-finder/scraper/src/helpers/shims'
 
 export class MediaUrlUpdater {
@@ -64,27 +66,7 @@ export interface MediaUrlUpdate {
 	url: string
 }
 
-async function isUrlOk(url: string) {
-	try {
-		const response = await fetch(url)
-		return response.ok
-	} catch (e) {
-		console.error(e)
-		return false
-	}
-}
-
-async function getUpdatedPost(shortcode: string): Promise<
-	| {
-			type: 'GraphImage' | 'GraphSidecar'
-			igId: string
-			media: {
-				igId: string
-				url: string
-			}[]
-	  }
-	| undefined
-> {
+async function getUpdatedPost(shortcode: string): Promise<ScraperApiPostsResponse | undefined> {
 	try {
 		const host = env.SCRAPER_PATH
 		const response = await fetch(`${host}/posts/${shortcode}`)

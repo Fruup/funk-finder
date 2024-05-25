@@ -58,7 +58,7 @@ export const readTimeStamp = (filename: string): number | null => {
 	return Date.UTC(year, month - 1, date, hour, minute, second)
 }
 
-async function collect(target: string) {
+export async function collect(target: string) {
 	const posts: Post[] = []
 	const dir = fs.readdirSync(target, { recursive: false, withFileTypes: true })
 

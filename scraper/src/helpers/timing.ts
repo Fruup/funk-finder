@@ -11,6 +11,8 @@ export class Timing {
 		this.iteration = iteration
 		this.elapsed = new Date().getTime() - this.start
 
+		if (iteration === 0) return
+
 		const eta = new Date(
 			new Date().getTime() +
 				(this.elapsed / this.iteration) * (this.maxIterations - this.iteration),
@@ -24,7 +26,7 @@ export class Timing {
 			console.log(
 				`💡 (${currentIteration}/${this.maxIterations}) | ` +
 					`Elapsed: ${this.formatElapsed()} | ` +
-					`ETA: ${eta.toLocaleString()}`,
+					`ETA: ${eta.toISOString()}`,
 			)
 		}
 	}

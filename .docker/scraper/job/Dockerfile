@@ -61,6 +61,11 @@ RUN pip install instaloader
 RUN apt-get install curl unzip -y
 RUN curl -fsSL https://bun.sh/install | bash
 
+# Install gcloud
+RUN curl https://sdk.cloud.google.com | bash -s -- --disable-prompts
+ENV PATH="${PATH}:/root/google-cloud-sdk/bin"
+# gcloud auth activate-service-account --key-file=...
+
 # ------------------------------------------------------
 
 FROM base-2 as prod
