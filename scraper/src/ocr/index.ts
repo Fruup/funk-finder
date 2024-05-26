@@ -46,8 +46,7 @@ export async function ocrAll() {
 		try {
 			// Check if the URL is still valid, otherwise update it.
 			if (!(await isUrlOk(medium.url))) {
-				const newUrl = await updateMediumURL(medium.id, { pb, scraperApiPath })
-				medium.url = newUrl
+				medium.url = await updateMediumURL(medium.id, { pb, scraperApiPath })
 			}
 
 			// Perform OCR and update the DB entry.
