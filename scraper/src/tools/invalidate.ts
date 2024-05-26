@@ -10,8 +10,8 @@ import { parseArgs } from 'util'
 if (import.meta.main) {
 	const nString = parseArgs({ allowPositionals: true }).positionals.at(0)
 	if (!nString) throw Error('No number provided')
-	const n = parseInt(nString)
-	if (isNaN(n) || n <= 0) throw Error('Invalid number provided')
+	const n = nString === 'all' ? -1 : parseInt(nString)
+	if (isNaN(n)) throw Error('Invalid number provided')
 
 	const pb = await getPocketbase()
 	const { mediaCollection } = await getChroma()
@@ -46,4 +46,6 @@ if (import.meta.main) {
 
 	// Delete from chroma.
 	await mediaCollection.delete({ ids })
+
+	console.log('✅ Done.')
 }

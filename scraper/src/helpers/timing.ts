@@ -7,8 +7,8 @@ export class Timing {
 		this.start = time || new Date().getTime()
 	}
 
-	update(iteration: number, print = true) {
-		this.iteration = iteration
+	update(iteration?: number, print = true) {
+		this.iteration = iteration ?? this.iteration + 1
 		this.elapsed = new Date().getTime() - this.start
 
 		if (iteration === 0) return
@@ -18,7 +18,7 @@ export class Timing {
 				(this.elapsed / this.iteration) * (this.maxIterations - this.iteration),
 		)
 
-		const currentIteration = (this.iteration + 1)
+		const currentIteration = this.iteration
 			.toString()
 			.padStart(this.maxIterations.toString().length, ' ')
 

@@ -34,7 +34,7 @@ export class GoogleOcr implements OcrBase {
 	public async ocr(url: string) {
 		const resultText = execSync(`gcloud ml vision detect-text "${url}"`, { encoding: 'utf-8' })
 		const result: RootObject = JSON.parse(resultText)
-		const text = result.responses.at(0)?.fullTextAnnotation.text
+		const text = result?.responses?.at(0)?.fullTextAnnotation?.text
 
 		if (!text) {
 			console.warn('⚠️ No text extracted from', url)
