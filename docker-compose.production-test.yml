@@ -2,13 +2,13 @@ name: funk-finder
 services:
   web:
     ports:
-      - 3000:3000
+      - 80:80
     env_file:
       - web/.env
     environment:
-      - PORT=3000
+      - PORT=80
+      - ORIGIN=http://localhost
       - NODE_ENV=production
-      - ORIGIN=http://localhost:3000
     networks:
       - funk-finder
 

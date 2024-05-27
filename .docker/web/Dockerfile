@@ -32,6 +32,7 @@ ADD db/index.ts ../db/
 ADD db/types ../db/types
 
 ADD scraper/src/helpers ../scraper/src/helpers
+ADD scraper/src/*.ts ../scraper/src/
 
 # Build.
 RUN bun run build
@@ -53,5 +54,4 @@ RUN bun install --production
 # Workaround???
 RUN bun add --production --no-save set-cookie-parser cookie devalue @microsoft/fetch-event-source
 
-ENV ORIGIN=https://web-production-ecd0.up.railway.app
 ENTRYPOINT bun run .
