@@ -2,23 +2,23 @@
 
 ## TODO
 
-- [ ] Frontend
-  - [ ] design
-  - [ ] disclaimer
-  - [ ] footer (GH link, imprint)
-- [ ] Backend
-  - [ ] deployment
-  - [ ] when to update?
-  - [ ] filter out irrelevant media
+- [x] Frontend
+  - [x] design
+  - [x] disclaimer
+  - [x] footer (GH link, imprint)
+- [x] Backend
+  - [x] deployment
+  - [x] when to update?
 
 ## Ideas
 
 - [x] Chroma DB
+- [x] Info page
 - [ ] Request further images for the same request (cache query embedding)
   - ChromaDB `get` exposes paging functionality
 - [ ] Cache query embeddings in DB (Redis/PB?)
-- [ ] Info page
+- [ ] Filter out irrelevant media
 
 ## Build Docker images
 
-`docker build --target prod --file ./web/Dockerfile -t fruup/funk-finder:web .`
+Use `.docker/build.sh`.
