@@ -22,3 +22,5 @@
 ## Build Docker images
 
 `docker build --target prod --file ./web/Dockerfile -t fruup/funk-finder:web .`
+
+- OrbStack multi-platform builds: https://docs.orbstack.dev/docker/images

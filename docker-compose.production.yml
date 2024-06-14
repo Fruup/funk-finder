@@ -5,34 +5,44 @@ services:
     build:
       dockerfile: .docker/web/Dockerfile
       target: prod
-    platform: linux/amd64
+      platforms:
+        - linux/arm64
+        - linux/amd64
 
   db:
     image: ghcr.io/fruup/funk-finder-db
     build:
       dockerfile: .docker/db/Dockerfile
       target: prod
-    platform: linux/amd64
+      platforms:
+        - linux/arm64
+        - linux/amd64
 
   scraper-job:
     image: ghcr.io/fruup/funk-finder-scraper/job
     build:
       dockerfile: .docker/scraper/job/Dockerfile
       target: prod
-    platform: linux/amd64
+      platforms:
+        - linux/arm64
+        - linux/amd64
 
   scraper-api:
     image: ghcr.io/fruup/funk-finder-scraper/api
     build:
       dockerfile: .docker/scraper/api/Dockerfile
       target: prod
-    platform: linux/amd64
+      platforms:
+        - linux/arm64
+        - linux/amd64
 
   chroma:
     image: ghcr.io/fruup/funk-finder-chroma
     build:
       dockerfile: .docker/chroma/Dockerfile
-    platform: linux/amd64
+      platforms:
+        - linux/arm64
+        - linux/amd64
 
 networks:
   funk-finder:

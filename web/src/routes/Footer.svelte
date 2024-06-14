@@ -24,6 +24,12 @@
 			</li>
 
 			<li>
+				<a href="mailto:info@leonscherer.com" target="_blank">
+					Probleme? Anregungen? Schreib 'ne <span class="gradient-text">Mail</span>!
+				</a>
+			</li>
+
+			<li>
 				<a href="https://leonscherer.com" target="_blank">
 					Entwickelt von
 					<span class="gradient-text">Leon</span>

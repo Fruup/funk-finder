@@ -128,7 +128,13 @@ export async function search(text: string): Promise<{
 	const responseItems = results
 		.map((promise) => {
 			if (promise.status === 'rejected') {
-				console.error(promise.reason)
+				const e = promise.reason
+				if (e instanceof ClientResponseError) {
+					console.error(e.toJSON())
+				} else {
+					console.error(promise.reason)
+				}
+
 				return
 			}
 
