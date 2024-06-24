@@ -1,0 +1,50 @@
+# -------------------------------
+# | Deployment file for Coolify |
+# -------------------------------
+
+services:
+  web:
+    image: 'ghcr.io/fruup/funk-finder-web@sha256:99534feefe3117bf3fe10bceb82d6d3152bae4051f6a1ab9c0f8c890607831aa'
+    environment:
+      - 'ORIGIN=${ORIGIN}'
+      - 'HOST_HEADER=${HOST_HEADER}'
+      - 'PORT_HEADER=${PORT_HEADER}'
+      - 'PROTOCOL_HEADER=${PROTOCOL_HEADER}'
+      - 'CHROMADB_PATH=${CHROMA_PATH}'
+      - 'POCKETBASE_PATH=${POCKETBASE_PATH}'
+      - 'SCRAPER_PATH=${SCRAPER_PATH}'
+      - 'CHROMADB_COLLECTION=${CHROMADB_COLLECTION}'
+      - 'OPENAI_API_KEY=${OPENAI_API_KEY}'
+      - 'EMBEDDING_MODEL=${EMBEDDING_MODEL}'
+      - 'POCKETBASE_AUTH=${POCKETBASE_AUTH}'
+
+  db:
+    image: 'ghcr.io/fruup/funk-finder-db@sha256:d07234bb1cc25db1bbc1fef29c28efc6c7f38f5734aa851eb85839a62dc4814b'
+    volumes:
+      - 'db-data:/pb/pb_data'
+
+  chroma:
+    image: 'ghcr.io/fruup/funk-finder-chroma@sha256:f658c9c2a285bd7fc43fa93d78be3749e0b1e17825378466ffc30b3c88bcb9a1'
+    volumes:
+      - 'chroma-data:/chroma/chroma'
+    labels:
+      - 'traefik.http.middlewares.test-auth.basicauth.users=leon:$apr1$hnMHViTi$mHSQZyv7LZPPdHok13Xzl1'
+    environment:
+      - 'OPENAI_API_KEY=${OPENAI_API_KEY}'
+
+  scraper-job:
+    image: 'ghcr.io/fruup/funk-finder-scraper/job@sha256:38cf0f3aa48dd67c8c417ec961aa37a6eb67b366f2178bb02a33daac3ed0c6af'
+    environment:
+      - 'OPENAI_API_KEY=${OPENAI_API_KEY}'
+      - 'EMBEDDING_MODEL=${EMBEDDING_MODEL}'
+      - 'CHROMA_PATH=${CHROMA_PATH}'
+      - 'POCKETBASE_PATH=${POCKETBASE_PATH}'
+      - 'SCRAPER_API_PATH=${SCRAPER_API_PATH}'
+      - 'SESSION=${SESSION}'
+      - 'POCKETBASE_AUTH=${POCKETBASE_AUTH}'
+      - 'GCLOUD_KEY=${GCLOUD_KEY}'
+
+  scraper-api:
+    image: 'ghcr.io/fruup/funk-finder-scraper/api@sha256:e9ed7cf436a161eae83f5f4e083f4a771561f72e2e079f7e7c6586aa7830865a'
+    environment:
+      - 'SESSION=${SESSION}'

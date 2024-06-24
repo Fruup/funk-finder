@@ -1,15 +1,15 @@
 FROM alpine:latest as base
 
-ARG PB_VERSION=0.22.11
-# ARG PLATFORM=linux_arm64
-ARG PLATFORM=linux_amd64
+ARG PB_VERSION=0.22.13
+ARG TARGETOS
+ARG TARGETARCH
 
 RUN apk add --no-cache \
   unzip \
   ca-certificates
 
 # download and unzip PocketBase
-ADD https://github.com/pocketbase/pocketbase/releases/download/v${PB_VERSION}/pocketbase_${PB_VERSION}_${PLATFORM}.zip /tmp/pb.zip
+ADD https://github.com/pocketbase/pocketbase/releases/download/v${PB_VERSION}/pocketbase_${PB_VERSION}_${TARGETOS}_${TARGETARCH}.zip /tmp/pb.zip
 RUN unzip /tmp/pb.zip -d /pb/
 
 ENV HOST=0.0.0.0

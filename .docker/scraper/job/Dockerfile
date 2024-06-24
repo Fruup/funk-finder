@@ -32,6 +32,8 @@ COPY scraper/src ./src
 # Add entrypoint.
 ADD .docker/scraper/job/entry.sh /usr/bin/docker-entry.sh
 RUN chmod +x /usr/bin/docker-entry.sh
+ADD .docker/scraper/job/job.sh /usr/bin/docker-job.sh
+RUN chmod +x /usr/bin/docker-job.sh
 ADD .docker/scraper/load-session.sh /usr/bin/load-session.sh
 RUN chmod +x /usr/bin/load-session.sh
 

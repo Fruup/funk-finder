@@ -1,9 +1,11 @@
 #!/bin/bash
 
+# RUN_MODE = "one-off" | "sleep" | null
+
 set -e
 
-# Expect the script to be executable.
-load-session.sh
-
-# run
-/root/.bun/bin/bun run src/job.ts
+if [[ "$RUN_MODE" == "one-off" ]]; then
+	docker-job.sh
+else
+	sleep infinity
+fi
