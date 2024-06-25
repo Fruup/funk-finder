@@ -24,4 +24,3 @@
 Use `.docker/build.sh`.
 
 - OrbStack multi-platform builds: https://docs.orbstack.dev/docker/images
- 
