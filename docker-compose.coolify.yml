@@ -48,3 +48,7 @@ services:
     image: 'ghcr.io/fruup/funk-finder-scraper/api@sha256:e9ed7cf436a161eae83f5f4e083f4a771561f72e2e079f7e7c6586aa7830865a'
     environment:
       - 'SESSION=${SESSION}'
+
+volumes:
+  db-data:
+  chroma-data:
