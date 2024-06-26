@@ -70,4 +70,8 @@ services:
 
 volumes:
   db-data:
+    name: 'db-data'
+    driver: 'local'
   chroma-data:
+    name: 'chroma-data'
+    driver: 'local'
