@@ -2,7 +2,7 @@ FROM chromadb/chroma
 
 ARG CHROMA_AUTH_ENCRYPTED
 
-ADD chroma/data /chroma/chroma
+# ADD chroma/data /chroma/chroma
 
 # Write credentials file.
 RUN <<EOF
