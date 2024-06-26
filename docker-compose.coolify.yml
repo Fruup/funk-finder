@@ -21,6 +21,7 @@ services:
       - 'EMBEDDING_MODEL=${EMBEDDING_MODEL}'
       - 'POCKETBASE_AUTH=${POCKETBASE_AUTH}'
       - 'CHROMA_AUTH=${CHROMA_AUTH}'
+      - 'PORT=80'
 
   db:
     # image: 'ghcr.io/fruup/funk-finder-db@sha256:d07234bb1cc25db1bbc1fef29c28efc6c7f38f5734aa851eb85839a62dc4814b'
