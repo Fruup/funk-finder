@@ -39,8 +39,8 @@ services:
         CHROMA_AUTH_ENCRYPTED: ${CHROMA_AUTH_ENCRYPTED}
     volumes:
       - '/volumes/chroma:/chroma/chroma'
-    labels:
-      - 'traefik.http.middlewares.test-auth.basicauth.users=leon:$apr1$hnMHViTi$mHSQZyv7LZPPdHok13Xzl1'
+    # labels:
+    # - 'traefik.http.middlewares.test-auth.basicauth.users=leon:$apr1$hnMHViTi$mHSQZyv7LZPPdHok13Xzl1'
     environment:
       - 'OPENAI_API_KEY=${OPENAI_API_KEY}'
 
