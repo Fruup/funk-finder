@@ -22,8 +22,15 @@ export async function getChroma(): Promise<{
 	collection: Collection
 }> {
 	if (!chroma) {
+		if (!env.CHROMADB_PATH) throw Error('Missing environment variable CHROMADB_PATH.')
+		if (!env.CHROMA_AUTH) throw Error('Missing environment variable CHROMA_AUTH.')
+
 		chroma = new ChromaClient({
 			path: env.CHROMADB_PATH,
+			auth: {
+				provider: 'basic',
+				credentials: env.CHROMA_AUTH,
+			},
 		})
 	}
 

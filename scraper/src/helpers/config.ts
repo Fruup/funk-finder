@@ -34,15 +34,20 @@ export async function getChroma() {
 	}
 
 	if (!import.meta.env.CHROMA_PATH) throw new Error('Missing environment variable CHROMA_PATH.')
+	if (!import.meta.env.CHROMA_AUTH) throw new Error('Missing environment variable CHROMA_AUTH.')
 	if (!import.meta.env.OPENAI_API_KEY)
 		throw new Error('Missing environment variable OPENAI_API_KEY.')
 	if (!import.meta.env.EMBEDDING_MODEL)
 		throw new Error('Missing environment variable EMBEDDING_MODEL.')
 
-	console.log(`Accessing ChromaDB unter ${import.meta.env.CHROMA_PATH}.`)
+	console.log(`Accessing ChromaDB under ${import.meta.env.CHROMA_PATH}.`)
 
 	chroma = new ChromaClient({
 		path: import.meta.env.CHROMA_PATH,
+		auth: {
+			provider: 'basic',
+			credentials: import.meta.env.CHROMA_AUTH,
+		},
 	})
 
 	embeddingFunction = new OpenAIEmbeddingFunction({
