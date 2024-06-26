@@ -29,7 +29,7 @@ services:
       dockerfile: .docker/db/Dockerfile
       target: prod
     volumes:
-      - 'db-data:/pb/pb_data'
+      - '/volumes/db:/pb/pb_data'
 
   chroma:
     # image: 'ghcr.io/fruup/funk-finder-chroma@sha256:f658c9c2a285bd7fc43fa93d78be3749e0b1e17825378466ffc30b3c88bcb9a1'
@@ -38,7 +38,7 @@ services:
       args:
         CHROMA_AUTH_ENCRYPTED: ${CHROMA_AUTH_ENCRYPTED}
     volumes:
-      - 'chroma-data:/chroma/chroma'
+      - '/volumes/chroma:/chroma/chroma'
     labels:
       - 'traefik.http.middlewares.test-auth.basicauth.users=leon:$apr1$hnMHViTi$mHSQZyv7LZPPdHok13Xzl1'
     environment:
@@ -67,11 +67,3 @@ services:
       target: prod
     environment:
       - 'SESSION=${SESSION}'
-
-volumes:
-  db-data:
-    name: 'db-data'
-    driver: 'local'
-  chroma-data:
-    name: 'chroma-data'
-    driver: 'local'
