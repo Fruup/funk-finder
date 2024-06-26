@@ -67,3 +67,4 @@ services:
       target: prod
     environment:
       - 'SESSION=${SESSION}'
+      - 'PORT=3000'
