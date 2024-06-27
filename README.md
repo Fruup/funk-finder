@@ -1,4 +1,8 @@
-# Funk Finder
+# Funk Finder 🔍
+
+> 💡 A web-app for searching Instagram posts by [@funk](https://instagram.com/funk) through free text!
+
+[![Screenshot of the application](https://github.com/Fruup/funk-finder/assets/55341374/3d516bf2-05c2-41d6-b937-0da0e6ead60e)](https://funk-finder.de)
 
 ## TODO
 
