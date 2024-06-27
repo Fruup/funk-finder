@@ -100,12 +100,22 @@ export async function updateMediumURL(
 	return found.url
 }
 
-export async function isUrlOk(url: string) {
+export async function isUrlOk(url: string, options: { timeout?: number } = {}) {
+	const { timeout = 3000 } = options
+	let timeoutId: ReturnType<typeof setTimeout> | null = null
+
 	try {
-		const response = await fetch(url)
+		const controller = new AbortController()
+		timeoutId = setTimeout(() => controller.abort(), timeout)
+
+		const response = await fetch(url, { signal: controller.signal })
 		return response.ok
 	} catch (e) {
 		console.error(e)
 		return false
+	} finally {
+		if (timeoutId != null) {
+			clearTimeout(timeoutId)
+		}
 	}
 }

@@ -4,7 +4,6 @@
 
 services:
   web:
-    # image: 'ghcr.io/fruup/funk-finder-web@sha256:99534feefe3117bf3fe10bceb82d6d3152bae4051f6a1ab9c0f8c890607831aa'
     build:
       dockerfile: .docker/web/Dockerfile
       target: prod
@@ -24,7 +23,6 @@ services:
       - 'PORT=80'
 
   db:
-    # image: 'ghcr.io/fruup/funk-finder-db@sha256:d07234bb1cc25db1bbc1fef29c28efc6c7f38f5734aa851eb85839a62dc4814b'
     build:
       dockerfile: .docker/db/Dockerfile
       target: prod
@@ -32,7 +30,6 @@ services:
       - '/volumes/db:/pb/pb_data'
 
   chroma:
-    # image: 'ghcr.io/fruup/funk-finder-chroma@sha256:f658c9c2a285bd7fc43fa93d78be3749e0b1e17825378466ffc30b3c88bcb9a1'
     build:
       dockerfile: .docker/chroma/Dockerfile
       args:
@@ -40,12 +37,11 @@ services:
     volumes:
       - '/volumes/chroma:/chroma/chroma'
     # labels:
-    # - 'traefik.http.middlewares.test-auth.basicauth.users=leon:$apr1$hnMHViTi$mHSQZyv7LZPPdHok13Xzl1'
+    # - 'traefik.http.middlewares.test-auth.basicauth.users=...
     environment:
       - 'OPENAI_API_KEY=${OPENAI_API_KEY}'
 
   scraper-job:
-    # image: 'ghcr.io/fruup/funk-finder-scraper/job@sha256:38cf0f3aa48dd67c8c417ec961aa37a6eb67b366f2178bb02a33daac3ed0c6af'
     build:
       dockerfile: .docker/scraper/job/Dockerfile
       target: prod
@@ -61,7 +57,6 @@ services:
       - 'CHROMA_AUTH=${CHROMA_AUTH}'
 
   scraper-api:
-    # image: 'ghcr.io/fruup/funk-finder-scraper/api@sha256:e9ed7cf436a161eae83f5f4e083f4a771561f72e2e079f7e7c6586aa7830865a'
     build:
       dockerfile: .docker/scraper/api/Dockerfile
       target: prod
