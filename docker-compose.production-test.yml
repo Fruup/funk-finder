@@ -3,47 +3,17 @@ services:
   web:
     ports:
       - 80:80
-    env_file:
-      - web/.env
     environment:
       - PORT=80
       - ORIGIN=http://localhost
       - NODE_ENV=production
-    networks:
-      - funk-finder
 
   db:
     ports:
       - 8080:8080
     volumes:
       - ./db/pb/pb_data:/pb/pb_data
-    networks:
-      - funk-finder
-
-  scraper-job:
-    env_file:
-      - scraper/.env
-    networks:
-      - funk-finder
-
-  scraper-api:
-    env_file:
-      - scraper/.env
-    networks:
-      - funk-finder
 
   chroma:
-    networks:
-      - funk-finder
-
-networks:
-  funk-finder:
-    driver: bridge
-
-volumes:
-  chroma-data:
-    driver: local
-    driver_opts:
-      type: none
-      device: ./chroma/data
-      o: bind
+    volumes:
+      - ./chroma/data:/chroma/chroma

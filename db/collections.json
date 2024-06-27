@@ -1,0 +1,344 @@
+[
+	{
+		"id": "_pb_users_auth_",
+		"name": "users",
+		"type": "auth",
+		"system": false,
+		"schema": [
+			{
+				"system": false,
+				"id": "users_name",
+				"name": "name",
+				"type": "text",
+				"required": false,
+				"presentable": false,
+				"unique": false,
+				"options": {
+					"min": null,
+					"max": null,
+					"pattern": ""
+				}
+			},
+			{
+				"system": false,
+				"id": "users_avatar",
+				"name": "avatar",
+				"type": "file",
+				"required": false,
+				"presentable": false,
+				"unique": false,
+				"options": {
+					"mimeTypes": ["image/jpeg", "image/png", "image/svg+xml", "image/gif", "image/webp"],
+					"thumbs": null,
+					"maxSelect": 1,
+					"maxSize": 5242880,
+					"protected": false
+				}
+			}
+		],
+		"indexes": [],
+		"listRule": null,
+		"viewRule": null,
+		"createRule": null,
+		"updateRule": null,
+		"deleteRule": null,
+		"options": {
+			"allowEmailAuth": true,
+			"allowOAuth2Auth": true,
+			"allowUsernameAuth": true,
+			"exceptEmailDomains": null,
+			"manageRule": null,
+			"minPasswordLength": 8,
+			"onlyEmailDomains": null,
+			"onlyVerified": false,
+			"requireEmail": false
+		}
+	},
+	{
+		"id": "s9r6r93veur1zhm",
+		"name": "analyticsEvents",
+		"type": "base",
+		"system": false,
+		"schema": [
+			{
+				"system": false,
+				"id": "bfhmtsji",
+				"name": "name",
+				"type": "text",
+				"required": true,
+				"presentable": false,
+				"unique": false,
+				"options": {
+					"min": null,
+					"max": null,
+					"pattern": ""
+				}
+			},
+			{
+				"system": false,
+				"id": "y1ygvr1r",
+				"name": "payload",
+				"type": "json",
+				"required": false,
+				"presentable": false,
+				"unique": false,
+				"options": {
+					"maxSize": 2000000
+				}
+			}
+		],
+		"indexes": [],
+		"listRule": null,
+		"viewRule": null,
+		"createRule": "@request.auth.id != \"\"",
+		"updateRule": null,
+		"deleteRule": null,
+		"options": {}
+	},
+	{
+		"id": "pai31hn1i48xdbj",
+		"name": "features",
+		"type": "base",
+		"system": false,
+		"schema": [
+			{
+				"system": false,
+				"id": "tb7ulpxw",
+				"name": "name",
+				"type": "text",
+				"required": true,
+				"presentable": false,
+				"unique": false,
+				"options": {
+					"min": null,
+					"max": null,
+					"pattern": ""
+				}
+			},
+			{
+				"system": false,
+				"id": "lie4j7qo",
+				"name": "pushes",
+				"type": "number",
+				"required": false,
+				"presentable": false,
+				"unique": false,
+				"options": {
+					"min": 0,
+					"max": null,
+					"noDecimal": true
+				}
+			}
+		],
+		"indexes": [],
+		"listRule": "@request.auth.id != \"\"",
+		"viewRule": "@request.auth.id != \"\"",
+		"createRule": "@request.auth.id != \"\"",
+		"updateRule": "@request.auth.id != \"\"",
+		"deleteRule": null,
+		"options": {}
+	},
+	{
+		"id": "awvcscujoun91i0",
+		"name": "media",
+		"type": "base",
+		"system": false,
+		"schema": [
+			{
+				"system": false,
+				"id": "apgjkrhi",
+				"name": "url",
+				"type": "url",
+				"required": true,
+				"presentable": false,
+				"unique": false,
+				"options": {
+					"exceptDomains": [],
+					"onlyDomains": []
+				}
+			},
+			{
+				"system": false,
+				"id": "k3ax2ds1",
+				"name": "alt",
+				"type": "text",
+				"required": false,
+				"presentable": false,
+				"unique": false,
+				"options": {
+					"min": null,
+					"max": null,
+					"pattern": ""
+				}
+			},
+			{
+				"system": false,
+				"id": "3blgitmq",
+				"name": "text",
+				"type": "text",
+				"required": false,
+				"presentable": false,
+				"unique": false,
+				"options": {
+					"min": null,
+					"max": null,
+					"pattern": ""
+				}
+			},
+			{
+				"system": false,
+				"id": "zwdpps5c",
+				"name": "igId",
+				"type": "text",
+				"required": false,
+				"presentable": false,
+				"unique": false,
+				"options": {
+					"min": null,
+					"max": null,
+					"pattern": ""
+				}
+			},
+			{
+				"system": false,
+				"id": "dsuvh3k6",
+				"name": "post",
+				"type": "relation",
+				"required": false,
+				"presentable": false,
+				"unique": false,
+				"options": {
+					"collectionId": "ymz581nj1eibh9k",
+					"cascadeDelete": false,
+					"minSelect": null,
+					"maxSelect": 1,
+					"displayFields": null
+				}
+			},
+			{
+				"system": false,
+				"id": "s4q9sssb",
+				"name": "extra",
+				"type": "json",
+				"required": false,
+				"presentable": false,
+				"unique": false,
+				"options": {
+					"maxSize": 2000000
+				}
+			},
+			{
+				"system": false,
+				"id": "zia7jtuw",
+				"name": "processed",
+				"type": "bool",
+				"required": false,
+				"presentable": false,
+				"unique": false,
+				"options": {}
+			},
+			{
+				"system": false,
+				"id": "6tjiklsf",
+				"name": "excluded",
+				"type": "bool",
+				"required": false,
+				"presentable": false,
+				"unique": false,
+				"options": {}
+			}
+		],
+		"indexes": ["CREATE INDEX `idx_uRMgOqL` ON `media` (`igId`)"],
+		"listRule": "@request.auth.id != \"\"",
+		"viewRule": "@request.auth.id != \"\"",
+		"createRule": "@request.auth.id != \"\"",
+		"updateRule": "@request.auth.id != \"\"",
+		"deleteRule": null,
+		"options": {}
+	},
+	{
+		"id": "ymz581nj1eibh9k",
+		"name": "posts",
+		"type": "base",
+		"system": false,
+		"schema": [
+			{
+				"system": false,
+				"id": "qtghleix",
+				"name": "caption",
+				"type": "text",
+				"required": false,
+				"presentable": false,
+				"unique": false,
+				"options": {
+					"min": null,
+					"max": null,
+					"pattern": ""
+				}
+			},
+			{
+				"system": false,
+				"id": "50iq6cdc",
+				"name": "shortcode",
+				"type": "text",
+				"required": false,
+				"presentable": false,
+				"unique": false,
+				"options": {
+					"min": null,
+					"max": null,
+					"pattern": ""
+				}
+			},
+			{
+				"system": false,
+				"id": "ckpj3ey0",
+				"name": "time",
+				"type": "date",
+				"required": false,
+				"presentable": false,
+				"unique": false,
+				"options": {
+					"min": "",
+					"max": ""
+				}
+			},
+			{
+				"system": false,
+				"id": "x2hzxdff",
+				"name": "igId",
+				"type": "text",
+				"required": false,
+				"presentable": false,
+				"unique": false,
+				"options": {
+					"min": null,
+					"max": null,
+					"pattern": ""
+				}
+			},
+			{
+				"system": false,
+				"id": "j7rfguvg",
+				"name": "extra",
+				"type": "json",
+				"required": false,
+				"presentable": false,
+				"unique": false,
+				"options": {
+					"maxSize": 2000000
+				}
+			}
+		],
+		"indexes": [
+			"CREATE UNIQUE INDEX `idx_p4t7HFV` ON `posts` (`shortcode`)",
+			"CREATE INDEX `idx_DlKq9cc` ON `posts` (`igId`)"
+		],
+		"listRule": "@request.auth.id != \"\"",
+		"viewRule": "@request.auth.id != \"\"",
+		"createRule": "@request.auth.id != \"\"",
+		"updateRule": "@request.auth.id != \"\"",
+		"deleteRule": null,
+		"options": {}
+	}
+]

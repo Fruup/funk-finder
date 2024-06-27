@@ -8,6 +8,9 @@ CMD bun i && bun run dev
 
 FROM --platform=$BUILDPLATFORM oven/bun:latest as builder
 
+ARG SOURCE_COMMIT
+ENV SOURCE_COMMIT=${SOURCE_COMMIT}
+
 WORKDIR /work/web
 
 # Install dependencies.

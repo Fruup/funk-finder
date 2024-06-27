@@ -31,4 +31,4 @@ FROM base as prod
 # COPY db/pb/pb_migrations /pb/pb_migrations
 # COPY db/pb/pb_hooks /pb/pb_hooks
 
-ADD db/pb/pb_data/backups/init.zip /pb/pb_data/backups/
+# ADD db/pb/pb_data/backups/init.zip /pb/pb_data/backups/

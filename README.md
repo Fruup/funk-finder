@@ -21,6 +21,4 @@
 
 ## Build Docker images
 
-Use `.docker/build.sh`.
-
-- OrbStack multi-platform builds: https://docs.orbstack.dev/docker/images
+Use `.docker/build`.

@@ -7,8 +7,11 @@ services:
     build:
       dockerfile: .docker/web/Dockerfile
       target: prod
+      args:
+        - 'SOURCE_COMMIT=${SOURCE_COMMIT}'
     environment:
       - 'ORIGIN=${ORIGIN}'
+      - 'PORT=80'
       - 'HOST_HEADER=${HOST_HEADER}'
       - 'PORT_HEADER=${PORT_HEADER}'
       - 'PROTOCOL_HEADER=${PROTOCOL_HEADER}'
@@ -20,7 +23,6 @@ services:
       - 'EMBEDDING_MODEL=${EMBEDDING_MODEL}'
       - 'POCKETBASE_AUTH=${POCKETBASE_AUTH}'
       - 'CHROMA_AUTH=${CHROMA_AUTH}'
-      - 'PORT=80'
 
   db:
     build:

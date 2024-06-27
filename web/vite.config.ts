@@ -4,4 +4,9 @@ import { imagetools } from 'vite-imagetools'
 
 export default defineConfig({
 	plugins: [imagetools(), sveltekit()],
+	server: {
+		fs: {
+			allow: ['./package.json'],
+		},
+	},
 })

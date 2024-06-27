@@ -1,6 +1,6 @@
 {
-	"name": "web",
-	"version": "0.0.1",
+	"name": "@funk-finder/web",
+	"version": "1.0.0",
 	"private": true,
 	"scripts": {
 		"dev": "bunx --bun vite --host",
