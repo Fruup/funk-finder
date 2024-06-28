@@ -11,7 +11,7 @@ services:
         - 'SOURCE_COMMIT=${SOURCE_COMMIT}'
     labels:
       - traefik.http.middlewares.redirect-to-non-www.redirectregex.regex=^https?://www\.(.*)
-      - traefik.http.middlewares.redirect-to-non-www.redirectregex.replacement=https://$${1}
+      - traefik.http.middlewares.redirect-to-non-www.redirectregex.replacement=https://${1}
       - traefik.http.middlewares.redirect-to-non-www.redirectregex.permanent=true
     environment:
       - 'ORIGIN=${ORIGIN}'
