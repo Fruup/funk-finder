@@ -1,28 +1,26 @@
 import type { SearchResponse } from '$lib/types'
 import { source } from 'sveltekit-sse'
-import { mockApi } from './mock'
-import { writable, type Readable } from 'svelte/store'
-import type { SearchEvents } from '../../routes/api/v1/search/types'
+import type { SearchEvents } from '../../../routes/api/v1/search/types'
 
-export interface API {
+interface APIv2 {
 	/**
 	 * Search for media or posts with the given text.
 	 *
 	 * To be able to update the response after the promise has been resolved, the response is a readable store.
 	 */
-	search(text: string): Promise<Readable<SearchResponse>>
+	search(text: string): Promise<{ searchResponse: SearchResponse; abort: () => void }>
 }
 
-const api = {
+export const apiV2 = {
 	async search(text) {
-		const { promise, resolve } = Promise.withResolvers<Readable<SearchResponse>>()
+		const { promise, resolve } = Promise.withResolvers<Awaited<ReturnType<APIv2['search']>>>()
 		let deferred: Function[] = []
-		const response = writable<SearchResponse>(undefined, () => {
-			return () => {
-				// Close the connection.
-				connection.close()
-			}
-		})
+		let response = $state<SearchResponse>()
+
+		function abort() {
+			// Close the connection.
+			connection.close()
+		}
 
 		const connection = source(`/api/v1/search`, {
 			close() {
@@ -46,8 +44,8 @@ const api = {
 					console.log('Received search result:', value)
 
 					if (value) {
-						response.set(value)
-						resolve(response)
+						response = value
+						resolve({ searchResponse: response, abort })
 					} else {
 						// reject(new Error('Unexpected result value received from the server'))
 					}
@@ -74,15 +72,11 @@ const api = {
 					}
 
 					// Update the URL of the item (medium or post) with the given ID.
-					response.update((current) =>
-						current.map((item) => (item.id === id ? { ...item, imageUrl: url } : item)),
-					)
+					const found = response?.find((item) => item.id === id)
+					if (found) found.imageUrl = url
 				}),
 		)
 
 		return promise
 	},
-} satisfies API
-
-// export default api
-export default mockApi
+} satisfies APIv2
