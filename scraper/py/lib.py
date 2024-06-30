@@ -29,7 +29,11 @@ def download_post(shortcode):
 
 def collect_post(shortcode):
 	# read and parse json and caption files
-	jsonFilename = glob.glob(f"./{shortcode}/*.json")[0]
+	jsonFiles = glob.glob(f"./{shortcode}/*.json")
+	if len(jsonFiles) == 0:
+		raise Exception(f"No file found for shortcode '{shortcode}'!")
+	
+	jsonFilename = jsonFiles[0]
 	with open(jsonFilename) as file:
 		text = file.read()
 		data = json.loads(text)
