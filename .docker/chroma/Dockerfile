@@ -2,6 +2,8 @@ FROM chromadb/chroma
 
 ARG CHROMA_AUTH_ENCRYPTED
 
+ENV CHROMA_WORKERS 8
+
 # Write credentials file.
 RUN <<EOF
 	if [ -z "${CHROMA_AUTH_ENCRYPTED}" ]; then
