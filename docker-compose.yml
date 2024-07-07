@@ -53,8 +53,6 @@ services:
   chroma:
     build:
       dockerfile: .docker/chroma/Dockerfile
-      args:
-        - CHROMA_AUTH_ENCRYPTED
     volumes:
       - chroma-data:/chroma/chroma
     ports:
