@@ -26,24 +26,14 @@
 		</a>
 	</h1>
 	<p transition:blur={{}} class="text-sm text-center">
-		{#if true}
-			Finde den <a
-				class="gradient-text"
-				href="https://instagram.com/funk"
-				target="_blank"
-				rel="noreferrer nofollow">@funk</a
-			>
-			Post,<br />
-			den Du schon seit Ewigkeiten suchst 🔍
-		{/if}
-
-		{#if false}
-			Durchsuche
-			<a href="https://instagram.com/funk" target="_blank" rel="noreferrer nofollow"> @funk </a>
-			Posts
-			<br />
-			nach einem beliebigen Thema 🔍
-		{/if}
+		Finde den <a
+			class="gradient-text"
+			href="https://instagram.com/funk"
+			target="_blank"
+			rel="noreferrer nofollow">@funk</a
+		>
+		Post,<br />
+		den Du schon seit Ewigkeiten suchst 🔍
 	</p>
 </header>
 
