@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { SearchResponseItem } from '$lib/types'
-	import { fade } from 'svelte/transition'
-	import Loader from './Loader.svelte'
+	import { Image } from 'lucide-svelte'
 
 	export let item: SearchResponseItem
 	let loading = true
@@ -14,13 +13,16 @@
 
 <div class="image-container" class:loading>
 	{#if loading}
-		<div transition:fade={{ duration: 200 }} class="loading-container">
-			<Loader />
+		<div class="p-4 py-3 size-full text-left drop-shadow-lg">
+			<p class="line-clamp-[7]">
+				<Image class="inline" />
+				{item.text}
+			</p>
 		</div>
 	{/if}
 
 	<img
-		class="object-cover object-top w-full h-full"
+		class="object-cover object-top size-full"
 		src={getProxyPath(item.imageUrl)}
 		alt={item.text}
 		crossorigin="anonymous"
@@ -44,7 +46,18 @@
 		width: 100%;
 		height: 100%;
 
-		background-color: var(--surface-1);
+		background: $color-accent-1;
+		background: linear-gradient(
+				153deg,
+				color.adjust($color-accent-1, $alpha: -0.2) 0%,
+				rgba(254, 73, 73, 0.8) 50%,
+				color.adjust($color-accent-2, $alpha: -0.2) 100%
+			),
+			radial-gradient(
+				circle at center,
+				gradient($c0: transparent, $c1: color.change(black, $alpha: 0.2))
+			);
+		background-blend-mode: overlay;
 
 		&.loading {
 			img {
@@ -53,18 +66,5 @@
 				scale: 0.9;
 			}
 		}
-	}
-
-	.loading-container {
-		position: absolute;
-		inset: 0;
-		display: grid;
-		place-content: center;
-		font-size: 1.5rem;
-
-		background-image: radial-gradient(
-			circle at center,
-			gradient($c0: transparent, $c1: color.change(white, $alpha: 0.2))
-		);
 	}
 </style>
