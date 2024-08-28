@@ -1,9 +1,7 @@
 import { browser } from '$app/environment'
 import analytics from '$lib/analytics'
 
-export const prerender = true
-
-export const load = async () => {
+export const load = async ({ fetch }) => {
 	if (!browser) return
 
 	// Fetch build info.
