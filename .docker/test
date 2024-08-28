@@ -9,4 +9,4 @@ docker compose \
 	--env-file "scraper/.env" \
 	--env-file "chroma/.env" \
 	up \
-	web db chroma scraper-api
+	web db chroma
