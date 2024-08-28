@@ -55,6 +55,7 @@ COPY --from=builder /work/web/bun.lockb .
 
 RUN bun install --production
 # Workaround???
-# RUN bun add --production set-cookie-parser cookie devalue @microsoft/fetch-event-source
+# Versions have to match lockfile. Otherwise, bun will error out.
+RUN bun install --production set-cookie-parser@2.6.0 cookie@0.6.0 devalue@5.0.0 @microsoft/fetch-event-source@2.0.1 focus-trap@7.5.4
 
 ENTRYPOINT bun run .
