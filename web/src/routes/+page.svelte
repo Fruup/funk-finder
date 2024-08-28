@@ -11,9 +11,13 @@
 	import Loader from './Loader.svelte'
 	import Box from '$lib/ui/Box.svelte'
 	import analytics from '$lib/analytics'
+	import Page from './Page.svelte'
 
 	let loading = false
 	let items: SearchResponseItem[] = []
+
+	let isDrawerOpen = false
+	let drawerText = ''
 
 	const duration = 150
 	let unsubscribe: () => void
@@ -54,7 +58,12 @@
 		}
 	}
 
-	function handleClickPost(item: SearchResponseItem) {
+	function handleClickPost(e: Event, item: SearchResponseItem) {
+		if (isDrawerOpen) {
+			e.preventDefault()
+			return
+		}
+
 		analytics.event('clickItem', { item, id: item.id, shortcode: item.shortcode })
 	}
 
@@ -77,15 +86,13 @@
 	}
 </script>
 
-<!-- <Drawer>
+<Drawer bind:open={isDrawerOpen}>
 	<p>
-		Lorem ipsum dolor sit amet consectetur adipisicing elit. Consectetur, aut? Laboriosam, non
-		sapiente debitis corrupti molestiae magnam quo! Deleniti magni ratione ipsam consectetur, nobis
-		nesciunt incidunt saepe facere expedita quidem.
+		{drawerText}
 	</p>
-</Drawer> -->
+</Drawer>
 
-<div class="page">
+<Page noMargin>
 	<SearchField {search} {loading} />
 
 	<ul class="m-auto max-w-screen-md grid grid-cols-3 gap-[1px]">
@@ -99,11 +106,11 @@
 				out:scale={{ duration, start: 0.9 }}
 			>
 				<a
-					class="block w-full h-full"
+					class="block size-full"
 					href="https://instagram.com/p/{item.shortcode}"
 					target="_blank"
 					rel="nofollow noreferrer"
-					on:click={() => handleClickPost(item)}
+					on:click={(e) => handleClickPost(e, item)}
 				>
 					<Image {item} />
 				</a>
@@ -123,7 +130,7 @@
 			</Box>
 		</div> -->
 	{/if}
-</div>
+</Page>
 
 {#if items.length > 0}
 	<Box onClick={focus}>
@@ -136,9 +143,3 @@
 {/if}
 
 <!-- <DebugContainer>{JSON.stringify(items, null, 2)}</DebugContainer> -->
-
-<style lang="scss">
-	.page {
-		text-align: center;
-	}
-</style>

@@ -20,12 +20,13 @@
 </svelte:head>
 
 <header class="flex flex-col gap-2 h-[45vh] justify-center items-center">
-	<h1 class="text-4xl text-center">
+	<h1 class="text-4xl text-center drop-shadow">
 		<a href="/">
 			FUNK<br />FINDER
 		</a>
 	</h1>
-	<p transition:blur={{}} class="text-sm text-center">
+
+	<p transition:blur={{}} class="text-sm text-center drop-shadow">
 		Finde den <a
 			class="gradient-text"
 			href="https://instagram.com/funk"
@@ -35,6 +36,12 @@
 		Post,<br />
 		den Du schon seit Ewigkeiten suchst 🔍
 	</p>
+
+	<nav class="flex flex-wrap gap-6 mt-4 underline drop-shadow">
+		<a href="/">Home</a>
+		<a href="/news">News</a>
+		<a href="/info">Info</a>
+	</nav>
 </header>
 
 <main class="min-h-[55vh]">
@@ -53,8 +60,7 @@
 		color: var(--text-1);
 	}
 
-	h1,
-	p {
+	.drop-shadow {
 		filter: drop-shadow(0 0 6px var(--surface-0));
 	}
 
