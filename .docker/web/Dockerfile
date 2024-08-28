@@ -55,6 +55,6 @@ COPY --from=builder /work/web/bun.lockb .
 
 RUN bun install --production
 # Workaround???
-RUN bun add --production --no-save --frozen-lockfile set-cookie-parser cookie devalue @microsoft/fetch-event-source
+# RUN bun add --production set-cookie-parser cookie devalue @microsoft/fetch-event-source
 
 ENTRYPOINT bun run .
