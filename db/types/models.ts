@@ -42,3 +42,14 @@ export type Post<
 type Model = {
 	[K in keyof RecordModel]: string extends K ? never : RecordModel[K]
 }
+
+export type News<
+	/**
+	 * Whether to include the record fields (id, created, updated etc.).
+	 */
+	IsModel extends boolean = false,
+> = {
+	heading: string
+	body: string // HTML
+	severity: 'info' | 'warn' | 'alert'
+} & (IsModel extends true ? Model : {})
