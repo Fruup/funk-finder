@@ -119,7 +119,7 @@
 	</ul>
 
 	{#if loading}
-		<div in:blur={{ delay: 200 }} class="text-2xl p-8">
+		<div in:blur={{ delay: 200 }} class="text-2xl text-center p-8">
 			<Loader />
 		</div>
 	{:else if items.length === 0}

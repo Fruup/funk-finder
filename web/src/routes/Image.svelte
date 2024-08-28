@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { SearchResponseItem } from '$lib/types'
-	import { Image } from 'lucide-svelte'
+	import { Image, ScanText } from 'lucide-svelte'
 
 	export let item: SearchResponseItem
 	let loading = true
@@ -11,11 +11,18 @@
 	}
 </script>
 
-<div class="image-container" class:loading>
+<div class="image-container text-[min(4vw,1rem)]" class:loading>
 	{#if loading}
-		<div class="p-4 py-3 size-full text-left drop-shadow-lg">
-			<p class="line-clamp-[7]">
-				<Image class="inline" />
+		<div
+			class="p-4 py-3 max-sm:px-1.5 max-sm:py-1 size-full text-left drop-shadow-lg overflow-clip"
+		>
+			<p class="line-clamp-5">
+				{#if item.type === 'medium'}
+					<Image size="1em" aria-label="Bild eines Posts" class="inline" />
+				{:else}
+					<ScanText size="1em" aria-label="Post" class="inline" />
+				{/if}
+
 				{item.text}
 			</p>
 		</div>

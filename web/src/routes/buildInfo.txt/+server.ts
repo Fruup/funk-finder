@@ -9,7 +9,6 @@ export const GET = async () => {
 		Name: pkg.name,
 		Version: pkg.version,
 		BuildTime: new Date().toISOString(),
-		// @ts-expect-error - SOURCE_COMMIT is a Coolify environment variable
 		Commit: env.SOURCE_COMMIT ?? '',
 	})
 }
