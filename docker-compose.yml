@@ -37,18 +37,18 @@ services:
     networks:
       - funk-finder
 
-  scraper-api:
-    build:
-      dockerfile: .docker/scraper/api/Dockerfile
-      target: dev
-    ports:
-      - 3000:3000
-    volumes:
-      - ./scraper:/work/scraper
-    env_file:
-      - scraper/.env
-    networks:
-      - funk-finder
+  # scraper-api:
+  #   build:
+  #     dockerfile: .docker/scraper/api/Dockerfile
+  #     target: dev
+  #   ports:
+  #     - 3000:3000
+  #   volumes:
+  #     - ./scraper:/work/scraper
+  #   env_file:
+  #     - scraper/.env
+  #   networks:
+  #     - funk-finder
 
   chroma:
     build:
