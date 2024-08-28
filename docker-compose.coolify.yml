@@ -64,10 +64,10 @@ services:
       - 'GCLOUD_KEY=${GCLOUD_KEY}'
       - 'CHROMA_AUTH=${CHROMA_AUTH}'
 
-  scraper-api:
-    build:
-      dockerfile: .docker/scraper/api/Dockerfile
-      target: prod
-    environment:
-      - 'SESSION=${SESSION}'
-      - 'PORT=3000'
+  # scraper-api:
+  #   build:
+  #     dockerfile: .docker/scraper/api/Dockerfile
+  #     target: prod
+  #   environment:
+  #     - 'SESSION=${SESSION}'
+  #     - 'PORT=3000'
