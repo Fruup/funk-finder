@@ -2,6 +2,10 @@
 	"name": "@funk-finder/scraper",
 	"module": "index.ts",
 	"type": "module",
+	"scripts": {
+		"job": "bun run ./src/job.ts",
+		"check": "bun run ./src/tools/check.ts"
+	},
 	"devDependencies": {
 		"@types/bun": "latest",
 		"@funk-finder/db": "../db"

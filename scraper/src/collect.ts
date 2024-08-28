@@ -18,26 +18,27 @@ const config = {
 export async function loadPosts(target: { posts?: string | string[]; profile?: string }) {
 	let targetArgument = ''
 	if (target.posts) {
-		targetArgument = toArray(target.posts)
-			.map((id) => `-${id}`)
-			.join(' ')
+		targetArgument =
+			'-- ' +
+			toArray(target.posts)
+				.map((id) => `-${id}`)
+				.join(' ')
 	} else if (target.profile) {
 		targetArgument = target.profile
 	} else {
 		throw new Error('No target specified.')
 	}
 
+	// Login is skipped for now.
+
 	execSync(
 		`
-    instaloader \
-      --no-pictures \
-      --no-videos \
-      --no-profile-pic \
-      --no-compress-json \
-			--sessionfile ./state/session \
-      --latest-stamps ./state/timestamps.ini \
-			--login leonmaj7 \
-			-- \
+    instaloader \\
+      --no-pictures \\
+      --no-videos \\
+      --no-profile-pic \\
+      --no-compress-json \\
+      --latest-stamps ./state/timestamps.ini \\
       ${targetArgument}
   `,
 		{ stdio: 'inherit' },

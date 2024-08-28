@@ -144,7 +144,9 @@ export async function search(text: string): Promise<{
 
 	return {
 		result: responseItems,
-		urlUpdatePromises: await updater.dispatch(),
+		// disable the updater for now
+		urlUpdatePromises: [],
+		// urlUpdatePromises: await updater.dispatch(),
 	}
 }
 
