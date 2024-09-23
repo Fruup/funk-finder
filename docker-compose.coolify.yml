@@ -49,17 +49,17 @@ services:
       - 'OPENAI_API_KEY=${OPENAI_API_KEY}'
       - 'CHROMA_WORKERS=${CHROMA_WORKERS}'
 
-  # scraper-job:
-  #   build:
-  #     dockerfile: .docker/scraper/job/Dockerfile
-  #     target: prod
-  #   environment:
-  #     - 'OPENAI_API_KEY=${OPENAI_API_KEY}'
-  #     - 'EMBEDDING_MODEL=${EMBEDDING_MODEL}'
-  #     - 'CHROMA_PATH=${CHROMA_PATH}'
-  #     - 'POCKETBASE_PATH=${POCKETBASE_PATH}'
-  #     - 'SCRAPER_API_PATH=${SCRAPER_API_PATH}'
-  #     - 'SESSION=${SESSION}'
-  #     - 'POCKETBASE_AUTH=${POCKETBASE_AUTH}'
-  #     - 'GCLOUD_KEY=${GCLOUD_KEY}'
-  #     - 'CHROMA_AUTH=${CHROMA_AUTH}'
+  scraper-job:
+    build:
+      dockerfile: .docker/scraper/job/Dockerfile
+      target: prod
+    environment:
+      - 'OPENAI_API_KEY=${OPENAI_API_KEY}'
+      - 'EMBEDDING_MODEL=${EMBEDDING_MODEL}'
+      - 'CHROMA_PATH=${CHROMA_PATH}'
+      - 'POCKETBASE_PATH=${POCKETBASE_PATH}'
+      - 'SCRAPER_API_PATH=${SCRAPER_API_PATH}'
+      - 'SESSION=${SESSION}'
+      - 'POCKETBASE_AUTH=${POCKETBASE_AUTH}'
+      - 'GCLOUD_KEY=${GCLOUD_KEY}'
+      - 'CHROMA_AUTH=${CHROMA_AUTH}'
