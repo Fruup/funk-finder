@@ -32,7 +32,35 @@ export class GoogleOcr implements OcrBase {
 	}
 
 	public async ocr(url: string) {
-		const resultText = execSync(`gcloud ml vision detect-text "${url}"`, { encoding: 'utf-8' })
+		let resultText: string
+
+		try {
+			resultText = execSync(`gcloud ml vision detect-text "${url}"`, { encoding: 'utf-8' })
+		} catch (e) {
+			if (
+				e
+					?.toString()
+					.includes(
+						"We're not allowed to access the URL on your behalf. Please download the content and pass it in.",
+					)
+			) {
+				// Retry with downloaded content.
+				const file = await (await fetch(url)).arrayBuffer()
+				const id = Math.random().toString(16).slice(2)
+				const filepath = './.tmp/' + id
+
+				try {
+					await Bun.write(filepath, file, { createPath: true })
+
+					resultText = execSync(`gcloud ml vision detect-text "${filepath}"`, { encoding: 'utf-8' })
+				} finally {
+					fs.rmSync(filepath)
+				}
+			} else {
+				throw e
+			}
+		}
+
 		const result: RootObject = JSON.parse(resultText)
 		const text = result?.responses?.at(0)?.fullTextAnnotation?.text
 
