@@ -5,7 +5,7 @@ RUN apt-get update
 RUN apt-get install pip -y
 
 # Install instaloader
-RUN pip install instaloader==4.12.1
+RUN pip install instaloader==4.13.1
 
 # Install bun
 RUN apt-get install curl unzip -y
