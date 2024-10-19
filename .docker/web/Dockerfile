@@ -16,7 +16,7 @@ WORKDIR /work/web
 # Install dependencies.
 ADD web/package.json ./
 ADD web/bun.lockb ./
-ADD web/patches/ ./patches/
+ADD web/patches ./patches
 
 ADD db/package.json ../db/
 
