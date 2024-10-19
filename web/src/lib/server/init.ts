@@ -75,7 +75,6 @@ export async function getPocketbase() {
 		}
 
 		const [username, ...rest] = env.POCKETBASE_AUTH.split(':')
-		pb.collection('users').authRefresh()
 		await pb.collection('users').authWithPassword(username, rest.join(':'))
 
 		// Set up auto refresh. The lack of this broke the app multiple times now 🙃
