@@ -16,7 +16,7 @@ WORKDIR /work/web
 # Install dependencies.
 ADD web/package.json ./
 ADD web/bun.lockb ./
-ADD web/patches ./patches/
+ADD web/patches ./patches
 
 ADD db/package.json ../db/
 
@@ -53,6 +53,7 @@ COPY --from=builder /work/web/build .
 # Copy the package.json and install production dependencies.
 COPY --from=builder /work/web/package.json .
 COPY --from=builder /work/web/bun.lockb .
+COPY --from=builder /work/web/patches ./patches
 
 RUN bun install --production
 # Workaround???
