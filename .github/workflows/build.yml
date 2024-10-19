@@ -1,0 +1,15 @@
+name: Build containers
+on:
+  pull_request:
+    branches: [main]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare environment
+        run: |
+          echo "" > .env
+          echo "CHROMA_AUTH_ENCRYPTED=_" >> .env
+      - name: Build containers
+        run: docker compose -f docker-compose.coolify.yml build
