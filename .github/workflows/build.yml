@@ -5,10 +5,11 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: Build
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v4
+      - name: Prepare .env file
+        run: |
+          echo "" > .env
+          echo "CHROMA_AUTH_ENCRYPTED=_" >> .env
       - name: Build containers
         run: docker compose -f docker-compose.coolify.yml build
