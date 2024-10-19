@@ -1,5 +1,1 @@
-instaloader
-fastapi
-pydantic
-starlette
-uvicorn
+instaloader==4.13.1
