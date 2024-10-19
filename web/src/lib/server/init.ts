@@ -7,6 +7,7 @@ import {
 } from 'chromadb'
 import Pocketbase from 'pocketbase'
 import { env } from '$env/dynamic/private'
+import { safeMs } from '$lib/utils'
 
 const config = {
 	embedder: 'openai' satisfies 'openai' | 'local',
@@ -16,6 +17,8 @@ const config = {
 let chroma: ChromaClient
 let pb: Pocketbase
 let collection: Collection
+
+let pbAuthRefreshInterval: ReturnType<typeof setInterval>
 
 export async function getChroma(): Promise<{
 	chroma: ChromaClient
@@ -72,7 +75,16 @@ export async function getPocketbase() {
 		}
 
 		const [username, ...rest] = env.POCKETBASE_AUTH.split(':')
+		pb.collection('users').authRefresh()
 		await pb.collection('users').authWithPassword(username, rest.join(':'))
+
+		// Set up auto refresh. The lack of this broke the app multiple times now 🙃
+		const interval = safeMs(env.POCKETBASE_AUTH_REFRESH_INTERVAL, '1d')
+
+		clearInterval(pbAuthRefreshInterval)
+		pbAuthRefreshInterval = setInterval(() => {
+			pb.collection('users').authRefresh()
+		}, interval)
 	}
 
 	return pb

@@ -33,8 +33,12 @@
 	"dependencies": {
 		"@sveltejs/kit": "^2.5.8",
 		"chromadb": "^1.8.1",
+		"ms": "3.0.0-canary.1",
 		"openai": "^4.38.2",
 		"pocketbase": "^0.21.1",
 		"uuid": "^9.0.1"
+	},
+	"patchedDependencies": {
+		"ms@3.0.0-canary.1": "patches/ms@3.0.0-canary.1.patch"
 	}
 }
