@@ -22,7 +22,7 @@ export async function search(text: string): Promise<{
 	const result = await collection.query({
 		nResults: 21,
 		queryTexts: [text],
-		include: [IncludeEnum.Distances, IncludeEnum.Metadatas],
+		include: [IncludeEnum.distances, IncludeEnum.metadatas],
 	})
 
 	const ids = result.ids?.[0]
@@ -34,7 +34,7 @@ export async function search(text: string): Promise<{
 	const items = ids
 		.map((id, index) => ({
 			id,
-			score: result.distances![0][index],
+			score: result.distances![0][index]!,
 			metadata: result.metadatas![0][index] as unknown as Metadata,
 		}))
 		.toSorted((a, b) => a.score - b.score)
