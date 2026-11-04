@@ -42,7 +42,7 @@ services:
       args:
         CHROMA_AUTH_ENCRYPTED: ${CHROMA_AUTH_ENCRYPTED}
     volumes:
-      - '/volumes/chroma:/chroma/chroma'
+      - '/volumes/chroma:/data'
     # labels:
     # - 'traefik.http.middlewares.test-auth.basicauth.users=...
     environment:

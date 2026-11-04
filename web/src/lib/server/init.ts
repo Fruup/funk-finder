@@ -1,18 +1,12 @@
-import {
-	ChromaClient,
-	Collection,
-	OpenAIEmbeddingFunction,
-	TransformersEmbeddingFunction,
-	type IEmbeddingFunction,
-} from 'chromadb'
+import { ChromaClient, type EmbeddingFunction, type Collection } from 'chromadb'
+import { OpenAIEmbeddingFunction } from '@chroma-core/openai'
 import Pocketbase from 'pocketbase'
 import { env } from '$env/dynamic/private'
 import { safeMs } from '$lib/utils'
 
-const config = {
-	embedder: 'openai' satisfies 'openai' | 'local',
-	embeddingModel: env.EMBEDDING_MODEL,
-}
+if (!env.OPENAI_API_KEY) throw new Error('OPENAI_API_KEY is required')
+if (!env.EMBEDDING_MODEL) throw new Error('EMBEDDING_MODEL is required')
+if (!env.CHROMADB_COLLECTION) throw new Error('Missing environment variable CHROMADB_COLLECTION.')
 
 let chroma: ChromaClient
 let pb: Pocketbase
@@ -29,6 +23,7 @@ export async function getChroma(): Promise<{
 		if (!env.CHROMA_AUTH) throw Error('Missing environment variable CHROMA_AUTH.')
 
 		chroma = new ChromaClient({
+			// TODO: these are deprecated
 			path: env.CHROMADB_PATH,
 			auth: {
 				provider: 'basic',
@@ -38,25 +33,15 @@ export async function getChroma(): Promise<{
 	}
 
 	if (!collection) {
-		let embeddingFunction: IEmbeddingFunction
+		let embeddingFunction: EmbeddingFunction
 
-		if (config.embedder === 'local') {
-			embeddingFunction = new TransformersEmbeddingFunction({})
-		} else if (config.embedder === 'openai') {
-			if (!env.OPENAI_API_KEY) {
-				throw new Error('OPENAI_API_KEY is required')
-			}
-
-			embeddingFunction = new OpenAIEmbeddingFunction({
-				openai_model: config.embeddingModel,
-				openai_api_key: env.OPENAI_API_KEY,
-			})
-		} else {
-			throw new Error('Invalid embedder: ' + config.embedder)
-		}
+		embeddingFunction = new OpenAIEmbeddingFunction({
+			modelName: env.EMBEDDING_MODEL!,
+			apiKey: env.OPENAI_API_KEY!,
+		})
 
 		collection = await chroma.getCollection({
-			name: env.CHROMADB_COLLECTION,
+			name: env.CHROMADB_COLLECTION!,
 			embeddingFunction,
 		})
 	}

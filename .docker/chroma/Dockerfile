@@ -1,4 +1,4 @@
-FROM chromadb/chroma
+FROM chromadb/chroma:1.5.10
 
 ARG CHROMA_AUTH_ENCRYPTED
 
