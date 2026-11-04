@@ -4,10 +4,8 @@
 	import { flip } from 'svelte/animate'
 	import SearchField from './SearchField.svelte'
 	import { blur, scale } from 'svelte/transition'
-	import DebugContainer from './DebugContainer.svelte'
 	import { onMount } from 'svelte'
 	import Image from './Image.svelte'
-	import Drawer from '$lib/ui/Drawer.svelte'
 	import Loader from './Loader.svelte'
 	import Box from '$lib/ui/Box.svelte'
 	import analytics from '$lib/analytics'
@@ -15,9 +13,6 @@
 
 	let loading = false
 	let items: SearchResponseItem[] = []
-
-	let isDrawerOpen = false
-	let drawerText = ''
 
 	const duration = 150
 	let unsubscribe: () => void
@@ -59,11 +54,6 @@
 	}
 
 	function handleClickPost(e: Event, item: SearchResponseItem) {
-		if (isDrawerOpen) {
-			e.preventDefault()
-			return
-		}
-
 		analytics.event('clickItem', { item, id: item.id, shortcode: item.shortcode })
 	}
 
@@ -85,12 +75,6 @@
 		})
 	}
 </script>
-
-<Drawer bind:open={isDrawerOpen}>
-	<p>
-		{drawerText}
-	</p>
-</Drawer>
 
 <Page noMargin>
 	<SearchField {search} {loading} />
