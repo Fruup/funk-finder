@@ -10,6 +10,7 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
 	},
 	"devDependencies": {
+		"@chroma-core/openai": "^0.1.10",
 		"@funk-finder/db": "../db",
 		"@sveltejs/adapter-node": "^5.0.1",
 		"@sveltejs/vite-plugin-svelte": "^3.0.0",
@@ -32,7 +33,7 @@
 	"type": "module",
 	"dependencies": {
 		"@sveltejs/kit": "^2.5.8",
-		"chromadb": "^1.8.1",
+		"chromadb": "^3.5.0",
 		"ms": "3.0.0-canary.1",
 		"openai": "^4.38.2",
 		"pocketbase": "^0.21.1",
