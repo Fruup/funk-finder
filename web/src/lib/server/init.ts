@@ -4,10 +4,6 @@ import Pocketbase from 'pocketbase'
 import { env } from '$env/dynamic/private'
 import { safeMs } from '$lib/utils'
 
-if (!env.OPENAI_API_KEY) throw new Error('OPENAI_API_KEY is required')
-if (!env.EMBEDDING_MODEL) throw new Error('EMBEDDING_MODEL is required')
-if (!env.CHROMADB_COLLECTION) throw new Error('Missing environment variable CHROMADB_COLLECTION.')
-
 let chroma: ChromaClient
 let pb: Pocketbase
 let collection: Collection
@@ -35,13 +31,18 @@ export async function getChroma(): Promise<{
 	if (!collection) {
 		let embeddingFunction: EmbeddingFunction
 
+		if (!env.OPENAI_API_KEY) throw new Error('OPENAI_API_KEY is required')
+		if (!env.EMBEDDING_MODEL) throw new Error('EMBEDDING_MODEL is required')
+		if (!env.CHROMADB_COLLECTION)
+			throw new Error('Missing environment variable CHROMADB_COLLECTION.')
+
 		embeddingFunction = new OpenAIEmbeddingFunction({
-			modelName: env.EMBEDDING_MODEL!,
-			apiKey: env.OPENAI_API_KEY!,
+			modelName: env.EMBEDDING_MODEL,
+			apiKey: env.OPENAI_API_KEY,
 		})
 
 		collection = await chroma.getCollection({
-			name: env.CHROMADB_COLLECTION!,
+			name: env.CHROMADB_COLLECTION,
 			embeddingFunction,
 		})
 	}
